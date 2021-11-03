@@ -1,7 +1,7 @@
 #include "Manager.hpp"
 
 Manager::Manager(int argc, char* argv[]) {
-	setlocale(LC_CTYPE, ".1251");
+	setlocale(LC_CTYPE, ".866");
 	system("color 0a");
 	moveWindow();
 	/*string s = "C:\\eded.hfc";
@@ -60,8 +60,11 @@ void Manager::moveWindow() {
 
 void Manager::openMessage(string& path, int mode, const char* title) {
 	OPENFILENAME ofn;
-	char filterSpec[2][MAX_PATH] = { "HexCoder File(*.hcf)\0*.hcf\0All files(*.*)\0*.*\0",
-									"All files(*.*)\0*.*\0HexCoder File(*.hcf)\0*.hcf\0" };
+	
+	const char filterSpec[4][MAX_PATH] = { "HexCoder File(*.hcf)\0*.hcf\0All files(*.*)\0*.*\0",
+																				 "All files(*.*)\0*.*\0HexCoder File(*.hcf)\0*.hcf\0",
+																				 "HexCoder Actions(*.hca)\0*.hca\0",
+																				 "HexCoder Actions(*.hca)\0*.hca\0" };
 	char fileName[MAX_PATH] = "";
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -70,7 +73,10 @@ void Manager::openMessage(string& path, int mode, const char* title) {
 	ofn.lpstrFile = fileName;
 	ofn.lpstrTitle = title;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	if (mode != 3)
+		ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	else
+		ofn.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
 	ofn.lpstrDefExt = "";
 	char temp[_MAX_PATH + 1];
 	GetModuleFileName(NULL, temp, _MAX_PATH);
@@ -101,13 +107,11 @@ void Manager::readFilePth(size_t n_thread, string& file, string path,
 	ifs.seekg(start);
 	ifs.read(&file[start], end - start);
 	ifs.close();
-	if(pass.empty() && insts.acts.empty())
-		HexCoder::code(file, start, end, fileSize);
-	else if (!pass.empty() && insts.acts.empty())
+	if (!pass.empty() && insts.acts.empty())
 		HexCoder::code(file, pass, start, end);
 	else if (!pass.empty() && !insts.acts.empty())
 		HexCoder::code(file, pass, start, end, insts, mode);
-	else
+	else if(pass.empty() && !insts.acts.empty())
 		HexCoder::code(file, insts, start, end, mode);
 	cout << "Thread " << n_thread << " read from " << (start ? start + 1 : 0);
 	cout << " to " << end << " bytes\n";
@@ -115,20 +119,14 @@ void Manager::readFilePth(size_t n_thread, string& file, string path,
 
 void Manager::byTyping(string& message) {
 	cout << "Enter message: ";
-	while (message.empty()) {
-		cin.ignore();
+	setlocale(LC_CTYPE, ".866");
+	while (message.empty())
 		getline(cin, message);
-		if (message.empty())
-			cout << "\nEmpty message!\n";
-	}
+	setlocale(LC_CTYPE, ".1251");
 	cout << '\n';
 }
 
 void Manager::enterPass() {
-	if (!insts.acts.empty()) {
-		memset(&insts.acts, 0, sizeof insts.acts);
-		cout << "\nActions was unset\n";
-	}
 	string pass1, pass2;
 	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
 		cout << "Enter password: ";
@@ -168,14 +166,14 @@ void Manager::toHexString(string& str) {
 
 void Manager::code(bool mode, bool isDrag) {
 	if (mode)
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Encrypting...");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Encrypting...");
 	else
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Decrypting...");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Decrypting...");
 	if (!isDrag) {
 		string title;
 		if (mode) title = "Encrypt file...";
 		else      title = "Decrypt file...";
-		openMessage(path, 1, title.c_str());
+		openMessage(path, mode, title.c_str());
 	}
 	if (!path.empty()) {
 
@@ -229,6 +227,7 @@ void Manager::code(bool mode, bool isDrag) {
 			cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 			cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << path << endl;
 			setlocale(LC_CTYPE, ".866");
+			memset(&file, 0, sizeof file);
 			memset(&path, 0, sizeof path);
 		}
 		catch (bad_alloc const&) {
@@ -249,9 +248,9 @@ void Manager::code(bool mode, bool isDrag) {
 void Manager::code(bool mode) {
 	system("cls");
 	if (mode)
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Encrypt text menu");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Encrypt text menu");
 	else
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Dectrypt text menu");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Dectrypt text menu");
 	printf("1. Type on keyboard\n2. From Clipboard\nAny key to return to previous menu\n\n");
 
 	char ch = _getch();
@@ -266,20 +265,19 @@ void Manager::code(bool mode) {
 	if (!mode)
 		fromHexString(message);
 
-	if (pass.empty() && insts.acts.empty())
-		HexCoder::code(message, 0, message.size(), message.size());
-	else if (!pass.empty() && insts.acts.empty())
+	if (!pass.empty() && insts.acts.empty())
 		HexCoder::code(message, pass, 0, message.size());
 	else if (!pass.empty() && !insts.acts.empty())
 		HexCoder::code(message, pass, 0, message.size(), insts, mode);
-	else
+	else if(pass.empty() && !insts.acts.empty())
 		HexCoder::code(message, insts, 0, message.size(), mode);
-
 
 	if (mode)
 		toHexString(message);
 
+	setlocale(LC_CTYPE, ".866");
 	cout << (mode ? "Encrypted message:\n" : "Message:\n") << message << "\n\n";
+	setlocale(LC_CTYPE, ".1251");
 	copyDlg(message);
 }
 
@@ -287,9 +285,8 @@ void Manager::fromHexString(string& str) {
 	unsigned short c;
 	stringstream ss(str);
 	string result = "";
-	while (ss >> hex >> c) {
+	while (ss >> hex >> c)
 		result.push_back((char)c);
-	}
 	str = result;
 }
 
@@ -297,7 +294,7 @@ void Manager::fileMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | File encryption menu");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | File encryption menu");
 		system("cls");
 		cout << "1. Encrypt\n2. Decrypt\nAny key to return to previous menu\n\n";
 		ch = _getch();
@@ -310,15 +307,87 @@ void Manager::fileMenu() {
 	}
 }
 
+void Manager::actionsMenu() {
+	char ch;
+	bool exit = 0;
+	while (!exit) {
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Actions menu");
+		system("cls");
+		cout << "1. (Re-)Create actions\n2. Unset actions\n";
+		cout << "3. Load actions\n4. Save actions\nAny key to return to previous menu\n\n";
+		ch = _getch();
+		if (ch == '1')
+			insts.createInstructions();
+		else if (ch == '2') {
+			memset(&insts.acts, 0, sizeof insts.acts);
+			cout << "\nActions was unset\n";
+			Sleep(750);
+		}
+		else if (ch == '3') {
+			openMessage(path, 2, "Load actions...");
+			if (!path.empty()) {
+				insts.readInstructions(path);
+				memset(&path, 0, sizeof path);
+			}
+		}
+		else if (ch == '4') {
+			if (!insts.acts.empty()) {
+				openMessage(path, 3, "Save actions...");
+				if (!path.empty()) {
+					insts.writeInstructions(path);
+					memset(&path, 0, sizeof path);
+				}
+			}
+			else {
+				cout << "Actions not set\n";
+				Sleep(750);
+			}
+		}
+		else
+			exit = 1;
+	}
+}
+
+void Manager::settingsMenu() {
+	char ch;
+	bool exit = 0;
+	while (!exit) {
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Settings menu");
+		system("cls");
+		cout << "1. Actions\n2. Set password\n3. Unset password";
+		cout << "\nAny key to return to previous menu\n\n";
+		ch = _getch();
+		if (ch == '1')
+			actionsMenu();
+		else if (ch == '2')
+			enterPass();
+		else if (ch == '3') {
+			memset(&pass, 0, sizeof pass);
+			cout << "\nPassword was unset\n";
+			Sleep(750);
+		}
+		else
+			exit = 1;
+	}
+}
+
 void Manager::mainMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Main menu");
+		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Main menu");
 		system("cls");
 		cout << "1. Encrypt text\n2. Decrypt text\n3. File encryption\n";
-		cout << "4. Create actions\n5. Set password\n6. Unset password\nAny key to exit\n\n";
+		cout << "4. Encryption settings\nAny key to exit\n\n";
 		ch = _getch();
+
+		if ((ch == '1' || ch == '2' || ch == '3') &&
+					(pass.empty() && insts.acts.empty())) {
+			cout << "Set password or actions first!\n";
+			Sleep(750);
+			continue;
+		}
+
 		if (ch == '1')
 			code(true);
 		else if (ch == '2')
@@ -326,14 +395,7 @@ void Manager::mainMenu() {
 		else if (ch == '3')
 			fileMenu();
 		else if (ch == '4')
-			insts.createInstructions();
-		else if (ch == '5')
-			enterPass();
-		else if (ch == '6') {
-			memset(&pass, 0, sizeof pass);
-			cout << "\nPassword was unset\n";
-			Sleep(750);
-		}
+			settingsMenu();
 		else
 			exit = 1;
 	}

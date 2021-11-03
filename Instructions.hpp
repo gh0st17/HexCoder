@@ -1,7 +1,8 @@
 #include "libs.hpp"
 #pragma once
 
-typedef vector< pair<char, uint8_t>> Actions;
+typedef pair<char, uint8_t> Action;
+typedef vector<Action> Actions;
 
 class Instructions {
 public:
@@ -10,8 +11,8 @@ public:
 	Instructions() {}
 	~Instructions();
 	void createInstructions();
-	void readInstructions();
-	void writeInstructions();
+	void readInstructions(string& path);
+	void writeInstructions(string& path);
 	void applyActions(string& data, size_t start, size_t end);
 	void reverseActions(string& data, size_t start, size_t end);
 

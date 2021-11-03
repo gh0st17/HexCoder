@@ -26,6 +26,8 @@ private:
   void code(bool mode);
 	void fromHexString(string& str);
 	void fileMenu();
+  void actionsMenu();
+  void settingsMenu();
 	void mainMenu();
 };
 
