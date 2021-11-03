@@ -1,0 +1,12 @@
+#include <omp.h>
+#include <cmath>
+#include <ctime>
+#include <string>
+#include <bitset>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <stdio.h>
+#include <iostream>
+#include <conio.h>
+#include <windows.h>
