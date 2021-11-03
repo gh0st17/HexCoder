@@ -1,0 +1,31 @@
+#pragma once
+#include "HexCoder.hpp"
+
+typedef chrono::duration<double> fsec;
+
+class Manager {
+
+public:
+  Manager(int argc, char* argv[]);
+  ~Manager();
+
+private:
+  string path, pass = "12333";
+  Instructions insts;
+  void copyText(string& s);
+  void copyDlg(string& s);
+  void moveWindow();
+  void openMessage(string& path, int mode, const char* title);
+  string openBuffer();
+  void readFilePth(size_t n_thread, string& file, string p,
+                   size_t start, size_t end, size_t fileSize);
+  void byTyping(string& message);
+  void enterPass();
+	void toHexString(string& str);
+	void code(bool mode, bool isDrag);
+  void code(bool mode);
+	void fromHexString(string& str);
+	void fileMenu();
+	void mainMenu();
+};
+

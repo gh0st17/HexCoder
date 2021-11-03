@@ -1,12 +1,14 @@
-#include <omp.h>
-#include <cmath>
-#include <ctime>
-#include <string>
-#include <bitset>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <stdio.h>
-#include <iostream>
-#include <conio.h>
+#include <functional>
+#include <algorithm>
 #include <windows.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <conio.h>
+#include <iomanip>
+#include <chrono>
+#include <string>
+#include <vector>
+#include <thread>
+
+using namespace std;

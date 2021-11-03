@@ -1,26 +1,13 @@
-#include "libs.hpp"
+#pragma once
+#include "Instructions.hpp"
 
-using namespace std;
+class HexCoder {
 
-class HexCoder
-{
 public:
-	enum typeData { CHIP, PLAIN };
-	HexCoder(){};
-	~HexCoder(){};
-	HexCoder(string inputString, typeData typeD);
-	HexCoder(vector<char> &inputString, typeData typeD);
-	string getString(typeData typeD);
-	char * getCharPtrString(typeData typeD);
-	vector<char> getCString(typeData typeD);
+	static void code(string& data, size_t start, size_t end, size_t dataSize);
+	static void code(string& data, string& pass);
+	static void code(string& data, string& pass, Instructions& insts);
 
 private:
-	string chipString, plainString;
-	vector<string> split(string str, char delimiter);
-	vector<vector<char> > splitByKey(string str, size_t keyLength);
-	vector<char> stringToCharArr(string &str);
-	string charArrToString(vector<char> &charArr);
-	vector<char> buildingKey(size_t size, bool mode);
-	void code(string s, typeData typeD);
-	void code(vector<char> &s, size_t s_size, typeData typeD);
+	static void applyActions(string& pass, Instructions& insts);
 };
