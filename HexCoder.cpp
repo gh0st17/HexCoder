@@ -16,29 +16,27 @@ void HexCoder::code(string& data, size_t start, size_t end, size_t dataSize) {
 	}
 }
 
-void HexCoder::code(string& data, string& pass) {
-	for (size_t i = 0; i < data.size(); i++)
+void HexCoder::code(string& data, string& pass, size_t start, size_t end) {
+	for (size_t i = start; i < end; i++)
 		data[i] ^= pass[(i % pass.size())];
 }
 
-void HexCoder::code(string& data, string& pass, Instructions& insts) {
-	for (size_t i = 0; i < data.size(); i++) {
-		data[i] ^= pass[(i % pass.size())];
-	}
+void HexCoder::code(string& data, Instructions& insts,
+										size_t start, size_t end, bool mode) {
+	if (mode)
+		insts.applyActions(data, start, end);
+	else
+		insts.reverseActions(data, start, end);
+
 }
 
-void HexCoder::applyActions(string& pass, Instructions& insts) {
-	size_t t = pass.size();
-	while (t < (2 << 16))
-		t = t << 2;
-	char c;
-	for (size_t i = 0; i < pass.size(); i++) {
-		c = t;
-		for (const auto& operand : insts.acts)
-			if (operand.first == '|')
-				c |= operand.second;
-			else if (operand.first == '&')
-				c &= operand.second;
-		pass[i] ^= c;
+void HexCoder::code(string& data, string& pass, size_t start, size_t end,
+										Instructions& insts, bool mode) {
+	if (mode)
+		insts.applyActions(data, start, end);
+	for (size_t i = start; i < end; i++) {
+		data[i] ^= pass[(i % pass.size())];
 	}
+	if (!mode)
+		insts.reverseActions(data, start, end);
 }

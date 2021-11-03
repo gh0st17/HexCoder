@@ -1,9 +1,21 @@
 #include "Manager.hpp"
 
 Manager::Manager(int argc, char* argv[]) {
-	setlocale(LC_CTYPE, ".866");
+	setlocale(LC_CTYPE, ".1251");
 	system("color 0a");
 	moveWindow();
+	/*string s = "C:\\eded.hfc";
+	string fileName = [s]() {
+		auto p1 = s.find('\\');
+		while (p1 != string::npos) {
+			if (s.find('\\', ++p1) == string::npos) {
+				break;
+			}
+			p1 = s.find('\\', ++p1);
+		}
+		return s.substr(p1);
+	}();
+	cout << fileName;*/
 	if (argc == 2) {
 		string p(argv[1]);
 		path = p;
@@ -83,31 +95,40 @@ string Manager::openBuffer() {
 	}
 }
 
-void Manager::readFilePth(size_t n_thread, string& file,
-													string p, size_t start, size_t end, size_t fileSize) {
-	ifstream ifs(p, ifstream::binary);
+void Manager::readFilePth(size_t n_thread, string& file, string path,
+													size_t start, size_t end, size_t fileSize, bool mode) {
+	ifstream ifs(path, ifstream::binary);
 	ifs.seekg(start);
 	ifs.read(&file[start], end - start);
 	ifs.close();
-	if(pass.empty() && sizeof(insts) == sizeof(Instructions))
+	if(pass.empty() && insts.acts.empty())
 		HexCoder::code(file, start, end, fileSize);
-	else if (!pass.empty() && sizeof(insts) == sizeof(Instructions))
-		HexCoder::code(file, pass);
-	else if (!pass.empty() && sizeof(insts) != sizeof(Instructions))
-		HexCoder::code(file, pass, insts);
+	else if (!pass.empty() && insts.acts.empty())
+		HexCoder::code(file, pass, start, end);
+	else if (!pass.empty() && !insts.acts.empty())
+		HexCoder::code(file, pass, start, end, insts, mode);
 	else
-		HexCoder::code(file, pass);
+		HexCoder::code(file, insts, start, end, mode);
 	cout << "Thread " << n_thread << " read from " << (start ? start + 1 : 0);
 	cout << " to " << end << " bytes\n";
 }
 
 void Manager::byTyping(string& message) {
 	cout << "Enter message: ";
-	getline(cin, message);
+	while (message.empty()) {
+		cin.ignore();
+		getline(cin, message);
+		if (message.empty())
+			cout << "\nEmpty message!\n";
+	}
 	cout << '\n';
 }
 
 void Manager::enterPass() {
+	if (!insts.acts.empty()) {
+		memset(&insts.acts, 0, sizeof insts.acts);
+		cout << "\nActions was unset\n";
+	}
 	string pass1, pass2;
 	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
 		cout << "Enter password: ";
@@ -187,7 +208,7 @@ void Manager::code(bool mode, bool isDrag) {
 				end = (i == partsCount - 1 ? fileSize : partSize * (i + 1));
 				sum += end - start;
 				t.push_back(thread(&Manager::readFilePth, this,
-					i + 1, ref(file), path, start, end, fileSize));
+					i + 1, ref(file), path, start, end, fileSize, mode));
 				start ^= end;
 				end ^= start;
 				start ^= end;
@@ -208,6 +229,7 @@ void Manager::code(bool mode, bool isDrag) {
 			cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 			cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << path << endl;
 			setlocale(LC_CTYPE, ".866");
+			memset(&path, 0, sizeof path);
 		}
 		catch (bad_alloc const&) {
 			cerr << "Can't allocate memory size " << fileSize << " bytes" << endl;
@@ -241,24 +263,23 @@ void Manager::code(bool mode) {
 	else
 		return;
 
-	if (mode) {
-		if (pass.empty())
-			HexCoder::code(message, 0, message.size(), message.size());
-		else
-			HexCoder::code(message, pass);
-		toHexString(message);
-		cout << "Encrypted message:\n" << message << "\n\n";
-	}
-	else {
+	if (!mode)
 		fromHexString(message);
-		if (pass.empty())
-			HexCoder::code(message, 0, message.size(), message.size());
-		else {
-			HexCoder::code(message, pass);
-			memset(&pass, 0, sizeof pass);
-		}
-		cout << "Message:\n" << message << "\n\n";
-	}
+
+	if (pass.empty() && insts.acts.empty())
+		HexCoder::code(message, 0, message.size(), message.size());
+	else if (!pass.empty() && insts.acts.empty())
+		HexCoder::code(message, pass, 0, message.size());
+	else if (!pass.empty() && !insts.acts.empty())
+		HexCoder::code(message, pass, 0, message.size(), insts, mode);
+	else
+		HexCoder::code(message, insts, 0, message.size(), mode);
+
+
+	if (mode)
+		toHexString(message);
+
+	cout << (mode ? "Encrypted message:\n" : "Message:\n") << message << "\n\n";
 	copyDlg(message);
 }
 
@@ -295,7 +316,8 @@ void Manager::mainMenu() {
 	while (!exit) {
 		SetConsoleTitleA("HexCoder Processor v1.4.1 [By Ghost17] | Main menu");
 		system("cls");
-		cout << "1. Encrypt text\n2. Decrypt text\n3. File encryptionv\n4. Create actions\n5. Set password\n6. Unset password\nAny key to exit\n\n";
+		cout << "1. Encrypt text\n2. Decrypt text\n3. File encryption\n";
+		cout << "4. Create actions\n5. Set password\n6. Unset password\nAny key to exit\n\n";
 		ch = _getch();
 		if (ch == '1')
 			code(true);
@@ -304,7 +326,7 @@ void Manager::mainMenu() {
 		else if (ch == '3')
 			fileMenu();
 		else if (ch == '4')
-			insts = Instructions();
+			insts.createInstructions();
 		else if (ch == '5')
 			enterPass();
 		else if (ch == '6') {
