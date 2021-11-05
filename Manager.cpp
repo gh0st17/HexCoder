@@ -1,9 +1,6 @@
 #include "Manager.hpp"
 
 Manager::Manager(int argc, char* argv[]) {
-	setlocale(LC_CTYPE, ".866");
-	system("color 0a");
-	moveWindow();
 	/*string s = "C:\\eded.hfc";
 	string fileName = [s]() {
 		auto p1 = s.find('\\');
@@ -30,79 +27,8 @@ Manager::~Manager() {
 	memset(&pass, 0, sizeof pass);
 }
 
-void Manager::copyText(string& s) {
-	const size_t len = strlen(s.c_str()) + 1;
-	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
-	memcpy(GlobalLock(hMem), s.c_str(), len);
-	GlobalUnlock(hMem);
-	OpenClipboard(0);
-	EmptyClipboard();
-	SetClipboardData(CF_TEXT, hMem);
-	CloseClipboard();
-}
-
-void Manager::copyDlg(string& s) {
-	cout << "1. Copy to clipboard\nAny key - no\n\n";
-	char ch = _getch();
-	if (ch == '1') copyText(s);
-}
-
-void Manager::moveWindow() {
-	unsigned Width = GetSystemMetrics(SM_CXSCREEN);
-	unsigned Height = GetSystemMetrics(SM_CYSCREEN);
-	unsigned WindowWidth = 680;
-	unsigned WindowHeight = 350;
-	unsigned NewWidth = (Width - WindowWidth) / 2;
-	unsigned NewHeight = (Height - WindowHeight) / 2;
-	HWND hWnd = GetConsoleWindow();
-	MoveWindow(hWnd, NewWidth, NewHeight, WindowWidth, WindowHeight, TRUE);
-}
-
-void Manager::openMessage(string& path, int mode, const char* title) {
-	OPENFILENAME ofn;
-	
-	const char filterSpec[4][MAX_PATH] = { "HexCoder File(*.hcf)\0*.hcf\0All files(*.*)\0*.*\0",
-																				 "All files(*.*)\0*.*\0HexCoder File(*.hcf)\0*.hcf\0",
-																				 "HexCoder Actions(*.hca)\0*.hca\0",
-																				 "HexCoder Actions(*.hca)\0*.hca\0" };
-	char fileName[MAX_PATH] = "";
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
-	ofn.lpstrFilter = filterSpec[mode];
-	ofn.lpstrFile = fileName;
-	ofn.lpstrTitle = title;
-	ofn.nMaxFile = MAX_PATH;
-	if (mode != 3)
-		ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-	else
-		ofn.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
-	ofn.lpstrDefExt = "";
-	char temp[_MAX_PATH + 1];
-	GetModuleFileName(NULL, temp, _MAX_PATH);
-	string appPath = temp;
-	appPath = appPath.substr(0, appPath.find_last_of("\\/"));
-	ofn.lpstrInitialDir = appPath.c_str();
-
-	if (GetOpenFileName(&ofn))
-		path = fileName;
-	else
-		cout << "File not open!\n";
-}
-
-string Manager::openBuffer() {
-	HANDLE h;
-	if (!OpenClipboard(NULL))
-		return "Failed to open buffer!";
-	else {
-		h = GetClipboardData(CF_TEXT);
-		CloseClipboard();
-		return (char*)h;
-	}
-}
-
 void Manager::readFilePth(size_t n_thread, string& file, string path,
-													size_t start, size_t end, size_t fileSize, bool mode) {
+		size_t start, size_t end, size_t fileSize, bool mode) {
 	ifstream ifs(path, ifstream::binary);
 	ifs.seekg(start);
 	ifs.read(&file[start], end - start);
@@ -165,15 +91,12 @@ void Manager::toHexString(string& str) {
 }
 
 void Manager::code(bool mode, bool isDrag) {
-	if (mode)
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Encrypting...");
-	else
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Decrypting...");
+	wm.setTitle(mode, Dialog::file);
 	if (!isDrag) {
 		string title;
 		if (mode) title = "Encrypt file...";
 		else      title = "Decrypt file...";
-		openMessage(path, mode, title.c_str());
+		wm.openMessage(path, mode, title.c_str());
 	}
 	if (!path.empty()) {
 
@@ -247,18 +170,14 @@ void Manager::code(bool mode, bool isDrag) {
 
 void Manager::code(bool mode) {
 	system("cls");
-	if (mode)
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Encrypt text menu");
-	else
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Dectrypt text menu");
-	printf("1. Type on keyboard\n2. From Clipboard\nAny key to return to previous menu\n\n");
+	wm.setTitle(mode, Dialog::text);
 
 	char ch = _getch();
 	string message;
 	if (ch == '1')
 		byTyping(message);
 	else if (ch == '2')
-		message = openBuffer();
+		message = wm.openBuffer();
 	else
 		return;
 
@@ -278,7 +197,7 @@ void Manager::code(bool mode) {
 	setlocale(LC_CTYPE, ".866");
 	cout << (mode ? "Encrypted message:\n" : "Message:\n") << message << "\n\n";
 	setlocale(LC_CTYPE, ".1251");
-	copyDlg(message);
+	wm.copyDlg(message);
 }
 
 void Manager::fromHexString(string& str) {
@@ -294,9 +213,8 @@ void Manager::fileMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | File encryption menu");
 		system("cls");
-		cout << "1. Encrypt\n2. Decrypt\nAny key to return to previous menu\n\n";
+		wm.setTitle(0, Dialog::file);
 		ch = _getch();
 		if (ch == '1')
 			code(true, false);
@@ -311,10 +229,8 @@ void Manager::actionsMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Actions menu");
 		system("cls");
-		cout << "1. (Re-)Create actions\n2. Unset actions\n";
-		cout << "3. Load actions\n4. Save actions\nAny key to return to previous menu\n\n";
+		wm.setTitle(0, Dialog::actions);
 		ch = _getch();
 		if (ch == '1')
 			insts.createInstructions();
@@ -324,7 +240,7 @@ void Manager::actionsMenu() {
 			Sleep(750);
 		}
 		else if (ch == '3') {
-			openMessage(path, 2, "Load actions...");
+			wm.openMessage(path, 2, "Load actions...");
 			if (!path.empty()) {
 				insts.readInstructions(path);
 				memset(&path, 0, sizeof path);
@@ -332,7 +248,7 @@ void Manager::actionsMenu() {
 		}
 		else if (ch == '4') {
 			if (!insts.acts.empty()) {
-				openMessage(path, 3, "Save actions...");
+				wm.openMessage(path, 3, "Save actions...");
 				if (!path.empty()) {
 					insts.writeInstructions(path);
 					memset(&path, 0, sizeof path);
@@ -352,10 +268,8 @@ void Manager::settingsMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Settings menu");
 		system("cls");
-		cout << "1. Actions\n2. Set password\n3. Unset password";
-		cout << "\nAny key to return to previous menu\n\n";
+		wm.setTitle(0, Dialog::settings);
 		ch = _getch();
 		if (ch == '1')
 			actionsMenu();
@@ -375,10 +289,8 @@ void Manager::mainMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		SetConsoleTitleA("HexCoder Processor v1.5 [By Ghost17] | Main menu");
 		system("cls");
-		cout << "1. Encrypt text\n2. Decrypt text\n3. File encryption\n";
-		cout << "4. Encryption settings\nAny key to exit\n\n";
+		wm.setTitle(0, Dialog::mainMenu);
 		ch = _getch();
 
 		if ((ch == '1' || ch == '2' || ch == '3') &&
