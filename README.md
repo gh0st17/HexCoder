@@ -10,3 +10,4 @@ XOR-based encryption processor with multithread support.
 - Encrypt via password
 - Encrypt via logical and arithmetic operators
 - Both ways
+- Settable read file block size

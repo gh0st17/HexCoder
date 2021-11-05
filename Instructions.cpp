@@ -1,6 +1,5 @@
 #include "Instructions.hpp"
 
-
 Instructions::~Instructions() {
   memset(&acts, 0, sizeof acts);
 }
@@ -12,7 +11,7 @@ void Instructions::createInstructions() {
   }
   cout << "Enter a sequence of types of arithmetical or logical actions to be applied.\n";
   cout << "Available operators is +, ^, < (cyclic lshift), > (cyclic rshift)\n";
-  cout << "To complete entering type '0 0'. For example: | 5 | 32 & 21 0 0\n> ";
+  cout << "To complete entering type '0 0'. For example: | 5 | 32 & 21 0 0\n>>> ";
   char op = 1;
   uint16_t val = 1;
   while (op != '0' && val != 0 || acts.empty()) {

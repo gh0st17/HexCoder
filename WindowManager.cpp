@@ -67,6 +67,7 @@ string WindowManager::openBuffer() {
 }
 
 void WindowManager::setTitle(bool mode, Dialog d) {
+	system("cls");
 	if (d == Dialog::mainMenu) {
 		SetConsoleTitleA((title + "Main menu").c_str());
 		cout << "1. Encrypt text\n2. Decrypt text\n3. File encryption\n";
@@ -84,7 +85,7 @@ void WindowManager::setTitle(bool mode, Dialog d) {
 	}
 	else if (d == Dialog::settings) {
 		SetConsoleTitleA((title + "Settings menu").c_str());
-		cout << "1. Actions\n2. Set password\n3. Unset password";
+		cout << "1. Actions\n2. Set password\n3. Unset password\n4. Set block size\n";
 		cout << "\nAny key to return to previous menu\n\n";
 	}
 	else if (d == Dialog::text) {
