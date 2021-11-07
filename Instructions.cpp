@@ -31,7 +31,7 @@ void Instructions::createInstructions() {
   _getch();
 }
 
-void Instructions::readInstructions(string& path) {
+void Instructions::readInstructions(const string& path) {
   ifstream ifs(path, ifstream::binary);
   ifs.seekg(0, ifs.end);
   size_t size = ifs.tellg();
@@ -43,7 +43,7 @@ void Instructions::readInstructions(string& path) {
   Sleep(750);
 }
 
-void Instructions::writeInstructions(string& path) {
+void Instructions::writeInstructions(const string& path) {
   ofstream ofs(path, ifstream::binary);
   ofs.write(reinterpret_cast<const char*>(&acts[0]), acts.size() * sizeof(Action));
   ofs.close();
@@ -51,7 +51,7 @@ void Instructions::writeInstructions(string& path) {
   Sleep(750);
 }
 
-void Instructions::applyActions(string& data, size_t start, size_t end) {
+void Instructions::applyActions(string& data, const size_t start, const size_t end) {
   for (size_t i = start; i < end; i++)
     for (const auto& operand : acts) {
       const auto& op(Ops.at(operand.first));
@@ -59,7 +59,7 @@ void Instructions::applyActions(string& data, size_t start, size_t end) {
     }
 }
 
-void Instructions::reverseActions(string& data, size_t start, size_t end) {
+void Instructions::reverseActions(string& data, const size_t start, const size_t end) {
   Actions revActs = Actions(acts.rbegin(), acts.rend());
   for (size_t i = start; i < end; i++)
     for (const auto& operand : revActs) {

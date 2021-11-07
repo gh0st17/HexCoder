@@ -12,10 +12,10 @@ public:
 	Instructions() {}
 	~Instructions();
 	void createInstructions();
-	void readInstructions(string& path);
-	void writeInstructions(string& path);
-	void applyActions(string& data, size_t start, size_t end);
-	void reverseActions(string& data, size_t start, size_t end);
+	void readInstructions(const string& path);
+	void writeInstructions(const string& path);
+	void applyActions(string& data, const size_t start, const size_t end);
+	void reverseActions(string& data, const size_t start, const size_t end);
 
 private:
 	const map<char, char (*)(char, uint8_t)> Ops {

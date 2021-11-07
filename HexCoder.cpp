@@ -6,7 +6,7 @@ void HexCoder::code(string& data, string& pass, size_t start, size_t end) {
 }
 
 void HexCoder::code(string& data, Instructions& insts,
-										size_t start, size_t end, bool mode) {
+		size_t start, size_t end, bool mode) {
 	if (mode)
 		insts.applyActions(data, start, end);
 	else
@@ -14,7 +14,7 @@ void HexCoder::code(string& data, Instructions& insts,
 }
 
 void HexCoder::code(string& data, string& pass, size_t start, size_t end,
-										Instructions& insts, bool mode) {
+		Instructions& insts, bool mode) {
 	if (mode)
 		insts.applyActions(data, start, end);
 	for (size_t i = start; i < end; i++) {

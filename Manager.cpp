@@ -2,35 +2,36 @@
 
 #define SLEEP_TIMEOUT 1500
 
-Manager::Manager(int argc, char* argv[]) {
-	/*string s = "C:\\eded.hfc";
-	string fileName = [s]() {
-		auto p1 = s.find('\\');
-		while (p1 != string::npos) {
-			if (s.find('\\', ++p1) == string::npos) {
-				break;
-			}
-			p1 = s.find('\\', ++p1);
-		}
-		return s.substr(p1);
-	}();
-	cout << fileName;*/
-	if (argc == 2) {
-		string p(argv[1]);
-		path = p;
-		p = p.substr(p.size() - 3);
-		if (p == "hcf") code(false, true);
-		else code(true, true);
+Manager::Manager(Params& params) {
+	path = params.path;
+
+	if (params.method == EncryptionMetod::Pass)
+		enterPass();
+	else if (params.method == EncryptionMetod::Actions)
+		actionsMenu();
+	else {
+		enterPass();
+		actionsMenu();
 	}
-	else mainMenu();
+
+	if (params.type == OperationType::Text)
+		codeText(params.mode);
+	else if (params.type == OperationType::File && !path.empty())
+		codeFile(params.mode);
+	else
+		cout << "File path did not set! Exiting.\n";
+}
+
+Manager::Manager() {
+	mainMenu();
 }
 
 Manager::~Manager() {
 	memset(&pass, 0, sizeof pass);
 }
 
-void Manager::readFilePth(size_t n_thread, string& file, string path,
-		size_t start, size_t partStart, size_t partEnd, bool mode) {
+void Manager::readFilePth(const size_t n_thread, string& file, const string& path,
+		const size_t start, const size_t partStart, const size_t partEnd, bool mode) {
 	ifstream ifs(path, ifstream::binary);
 	ifs.seekg(start);
 	ifs.read(&file[partStart], (partEnd - partStart));
@@ -63,7 +64,7 @@ void Manager::setBlockSize() {
 	while (powerOfTwo > 63) {
 		cin >> powerOfTwo;
 	}
-	blockSize = 1 << powerOfTwo;
+	blockSize = 1Ui64 << powerOfTwo;
 }
 
 void Manager::enterPass() {
@@ -104,141 +105,129 @@ void Manager::toHexString(string& str) {
 	str.pop_back();
 }
 
-void Manager::code(bool mode, bool isDrag) {
+void Manager::codeFile(bool mode) {
 	wm.setTitle(mode, Dialog::file);
-	if (!isDrag) {
-		string title;
-		if (mode) title = "Encrypt file...";
-		else      title = "Decrypt file...";
-		wm.openMessage(path, mode, title.c_str());
+	ifstream ifs(path, ifstream::binary);
+	if (!ifs) {
+		cerr << "Error opening file! Exit\n";
+		_getch();
+		return;
 	}
-	if (!path.empty()) {
-		ifstream ifs(path, ifstream::binary);
-		if (!ifs) {
-			cerr << "Error opening file! Exit\n";
-			_getch();
-			return; 
-		}
-		ifs.seekg(0, ifs.end);
-		size_t fileSize = ifs.tellg(),
-			currentBlockSize = blockSize;
-		if (blockSize > fileSize) {
-			blockSize = fileSize;
-			cout << "Warning: block size < file size, ";
-			cout << "changing block size to file size.\n";
-		}
-		size_t threadCount = thread::hardware_concurrency(),
-			partSize = blockSize / threadCount, blocksCount = 0;
-		while (blocksCount * blockSize < fileSize)
-			blocksCount++;
-		ifs.close();
+	ifs.seekg(0, ifs.end);
+	size_t fileSize = ifs.tellg(),
+		currentBlockSize = blockSize;
+	ifs.close();
+	if (blockSize > fileSize) {
+		blockSize = fileSize;
+		cout << "Warning: block size < file size, ";
+		cout << "changing block size to file size.\n";
+	}
+	size_t threadCount = thread::hardware_concurrency(),
+		partSize = blockSize / threadCount, blocksCount = 0;
+	while (blocksCount * blockSize < fileSize)
+		blocksCount++;
 
-		try {
-			string file = string(blockSize, '\0');
-			if (!mode && path.substr(path.size() - 3) != "hcf")
-				throw "File extension not 'hcf'";
+	try {
+		string file = string(blockSize, '\0');
+		if (!mode && path.substr(path.size() - 3) != "hcf")
+			throw "File extension not 'hcf'";
 
-			cout << "File size: " << fileSize << " bytes\n";
-			cout << "Block size: " << blockSize << " bytes\n";
-			cout << "Part size: " << partSize << " bytes\n";
-			cout << "Please wait...\n";
+		cout << "File size: " << fileSize << " bytes\n";
+		cout << "Block size: " << blockSize << " bytes\n";
+		cout << "Part size: " << partSize << " bytes\n";
+		cout << "Please wait...\n";
 
-			size_t start = 0, end, partStart = 0, partEnd, sum = 0, psum = 0;
+		size_t start = 0, end, partStart = 0, partEnd, sum = 0, psum = 0;
 
-			auto t1 = chrono::high_resolution_clock::now();
-			string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
-			filesystem::remove(outPath);
-			ofstream ofs(outPath, ofstream::binary);
-			for (size_t b = 0; b < blocksCount; b++) {
-				vector<thread> t;
-				for (size_t i = 0; i < threadCount; i++) {
+		auto t1 = chrono::high_resolution_clock::now();
+		string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
+		filesystem::remove(outPath);
+		ofstream ofs(outPath, ofstream::binary);
+		for (size_t b = 0; b < blocksCount; b++) {
+			vector<thread> t;
+			for (size_t i = 0; i < threadCount; i++) {
 
-					end = [i, b, start, threadCount, fileSize,
-						blocksCount, partSize](size_t& bs) {
+				end = [i, b, start, threadCount, fileSize,
+					blocksCount, partSize](size_t& bs) {
 
-						if (b == blocksCount - 1) {
-							if (i == threadCount - 1)
-								return fileSize;
-							else
-								return start + partSize;
-						}
-						else if (i == threadCount - 1) 
-								return bs + (bs * b);
+					if (b == blocksCount - 1) {
+						if (i == threadCount - 1)
+							return fileSize;
 						else
-							return partSize * (i + 1) + (bs * b);
-					}(blockSize);
+							return start + partSize;
+					}
+					else if (i == threadCount - 1)
+						return bs + (bs * b);
+					else
+						return partSize * (i + 1) + (bs * b);
+				}(blockSize);
 
-					partEnd = [i, b, partStart, threadCount,
-						blocksCount, partSize, start, end](size_t& bs) {
+				partEnd = [i, b, partStart, threadCount,
+					blocksCount, partSize, start, end](size_t& bs) {
 
-						if (b == blocksCount - 1) {
-							if (i == threadCount - 1)
-								return partStart + (end - start);
-							else
-								return partStart + partSize;
-						}
-						else if (i == threadCount - 1)
-							return bs;
+					if (b == blocksCount - 1) {
+						if (i == threadCount - 1)
+							return partStart + (end - start);
 						else
 							return partStart + partSize;
-					}(blockSize);
+					}
+					else if (i == threadCount - 1)
+						return bs;
+					else
+						return partStart + partSize;
+				}(blockSize);
 
-					sum += end - start;
-					psum += partEnd - partStart;
-					t.push_back(thread(&Manager::readFilePth, this,
-						i + 1, ref(file), path, start,
-						partStart, partEnd, mode));
-					//cout << "Thread " << i + 1 << " read from " << (start ? start + 1 : 0);
-					//cout << " to " << end << " bytes pStart " << partStart << " pEnd " << partEnd << endl;
-					
-					start ^= end;
-					end ^= start;
-					start ^= end;
+				sum += end - start;
+				psum += partEnd - partStart;
+				t.push_back(thread(&Manager::readFilePth, this,
+					i + 1, ref(file), path, start,
+					partStart, partEnd, mode));
 
-					partStart ^= partEnd;
-					partEnd ^= partStart;
-					partStart ^= partEnd;
-				}
-				partStart = 0;
-				for_each(t.begin(), t.end(), mem_fn(&thread::join));
+				start ^= end;
+				end ^= start;
+				start ^= end;
 
-				cout << "Writing block " << b + 1 << " to file...\n";
-				ofs << file;
+				partStart ^= partEnd;
+				partEnd ^= partStart;
+				partStart ^= partEnd;
 			}
-			ofs.close();
+			partStart = 0;
+			for_each(t.begin(), t.end(), mem_fn(&thread::join));
 
-			auto t2 = std::chrono::high_resolution_clock::now();
-			fsec duration = t2 - t1;
+			cout << "Writing block " << b + 1 << " to file...\n";
+			ofs << file;
+		}
+		ofs.close();
 
-			if (currentBlockSize > fileSize) {
-				blockSize = currentBlockSize;
-				cout << "Warning: block size returned to ";
-				cout << blockSize << " bytes.\n";
-			}
-			setlocale(LC_CTYPE, ".1251");
-			cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
-			cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
-			setlocale(LC_CTYPE, ".866");
-			file.clear();
-			path.clear();
+		auto t2 = std::chrono::high_resolution_clock::now();
+		fsec duration = t2 - t1;
+
+		if (currentBlockSize > fileSize) {
+			blockSize = currentBlockSize;
+			cout << "Warning: block size returned to ";
+			cout << blockSize << " bytes.\n";
 		}
-		catch (bad_alloc const&) {
-			cerr << "Can't allocate memory size " << blockSize << " bytes." << endl;
-			cerr << "Try reduce block size.\n";
-		}
-		catch (exception e) {
-			cerr << e.what() << endl;
-		}
-		catch (char* c) {
-			cout << c << endl;;
-		}
+		setlocale(LC_CTYPE, ".1251");
+		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
+		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
+		setlocale(LC_CTYPE, ".866");
+		file.clear();
+		path.clear();
 	}
-	else
-		cout << "Path not defined\n";
+	catch (bad_alloc const&) {
+		cerr << "Can't allocate memory size " << blockSize << " bytes.\n";
+		cerr << "Try reduce block size.\n";
+	}
+	catch (exception e) {
+		cerr << e.what() << endl;
+	}
+	catch (char* c) {
+		cerr << c << endl;;
+	}
 	_getch();
 }
 
-void Manager::code(bool mode) {
+void Manager::codeText(bool mode) {
 	wm.setTitle(mode, Dialog::text);
 
 	char ch = _getch();
@@ -278,16 +267,27 @@ void Manager::fromHexString(string& str) {
 	str = result;
 }
 
+void Manager::setOpenDlgTitle(bool mode){
+		string title;
+		if (mode) title = "Encrypt file...";
+		else      title = "Decrypt file...";
+		wm.openMessage(path, mode, title.c_str());
+}
+
 void Manager::fileMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
 		wm.setTitle(0, Dialog::file);
 		ch = _getch();
-		if (ch == '1')
-			code(true, false);
-		else if (ch == '2')
-			code(false, false);
+		if (ch == '1') {
+			setOpenDlgTitle(true);
+			codeFile(true);
+		}
+		else if (ch == '2') {
+			setOpenDlgTitle(false);
+			codeFile(false);
+		}
 		else
 			exit = 1;
 	}
@@ -371,9 +371,9 @@ void Manager::mainMenu() {
 		}
 
 		if (ch == '1')
-			code(true);
+			codeText(true);
 		else if (ch == '2')
-			code(false);
+			codeText(false);
 		else if (ch == '3')
 			fileMenu();
 		else if (ch == '4')
