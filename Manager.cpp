@@ -110,7 +110,7 @@ void Manager::codeFile(bool mode) {
 	wm.setTitle(mode, Dialog::file);
 	ifstream ifs(path, ifstream::binary);
 	if (!ifs) {
-		cerr << "Error opening file! Exit\n";
+		cerr << "Error opening file! Canceled.\n";
 		_getch();
 		return;
 	}
@@ -138,14 +138,14 @@ void Manager::codeFile(bool mode) {
 		cout << "Part size: " << partSize << " bytes\n";
 		cout << "Please wait...\n";
 
-		size_t start = 0, end, partStart = 0, partEnd, sum = 0, psum = 0;
+		size_t start = 0, end, partStart = 0, partEnd, sum = 0; //, psum = 0;
 
 		auto t1 = chrono::high_resolution_clock::now();
 		string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
-		filesystem::remove(outPath);
+
 		ofstream ofs(outPath, ofstream::binary);
+		vector<thread> t;
 		for (size_t b = 0; b < blocksCount; b++) {
-			vector<thread> t;
 			for (size_t i = 0; i < threadCount; i++) {
 
 				end = [i, b, start, threadCount, fileSize,
@@ -163,12 +163,12 @@ void Manager::codeFile(bool mode) {
 						return partSize * (i + 1) + (bs * b);
 				}(blockSize);
 
-				partEnd = [i, b, partStart, threadCount,
+				partEnd = [i, b, partStart, threadCount, fileSize,
 					blocksCount, partSize, start, end](size_t& bs) {
 
 					if (b == blocksCount - 1) {
 						if (i == threadCount - 1)
-							return partStart + (end - start);
+							return fileSize - (bs * b);
 						else
 							return partStart + partSize;
 					}
@@ -179,7 +179,7 @@ void Manager::codeFile(bool mode) {
 				}(blockSize);
 
 				sum += end - start;
-				psum += partEnd - partStart;
+				//psum += partEnd - partStart;
 				t.push_back(thread(&Manager::readFilePth, this,
 					i + 1, b + 1, ref(file), path, start,
 					partStart, partEnd, mode));
@@ -194,9 +194,13 @@ void Manager::codeFile(bool mode) {
 			}
 			partStart = 0;
 			for_each(t.begin(), t.end(), mem_fn(&thread::join));
+			t.clear();
 
 			cout << "Writing block " << b + 1 << " to file...\n";
-			ofs << file;
+			if (b == blocksCount - 1)
+				ofs.write(&file[0], fileSize - (blockSize * b));
+			else
+				ofs << file;
 		}
 		ofs.close();
 
