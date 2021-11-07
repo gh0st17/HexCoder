@@ -30,7 +30,7 @@ Manager::~Manager() {
 	memset(&pass, 0, sizeof pass);
 }
 
-void Manager::readFilePth(const size_t n_thread, string& file, const string& path,
+void Manager::readFilePth(const size_t n_thread, const size_t n_block, string& file, const string& path,
 		const size_t start, const size_t partStart, const size_t partEnd, bool mode) {
 	ifstream ifs(path, ifstream::binary);
 	ifs.seekg(start);
@@ -43,7 +43,8 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	else if(pass.empty() && !insts.acts.empty())
 		hc.code(file, insts, partStart, partEnd, mode);
 	m_locker.lock();
-	cout << "Thread " << n_thread << " read from " << (partStart ? partStart + 1 : 0);
+	cout << "Thread " << n_thread << " read block " << n_block;
+	cout << " from " << (partStart ? partStart + 1 : 0);
 	cout << " to " << partEnd << " bytes\n";
 	m_locker.unlock();
 }
@@ -180,7 +181,7 @@ void Manager::codeFile(bool mode) {
 				sum += end - start;
 				psum += partEnd - partStart;
 				t.push_back(thread(&Manager::readFilePth, this,
-					i + 1, ref(file), path, start,
+					i + 1, b + 1, ref(file), path, start,
 					partStart, partEnd, mode));
 
 				start ^= end;

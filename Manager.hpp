@@ -36,7 +36,7 @@ private:
   HexCoder hc;
   size_t blockSize = 1Ui64 << 28Ui64;
 
-  void readFilePth(const size_t n_thread, string& file, const string& path,
+  void readFilePth(const size_t n_thread, const size_t n_block, string& file, const string& path,
     const size_t start, const size_t partStart, const size_t partEnd, bool mode);
   void byTyping(string& message);
   void setBlockSize();
