@@ -27,7 +27,7 @@ Manager::Manager() {
 }
 
 Manager::~Manager() {
-	memset(&pass, 0, sizeof pass);
+	memset(&pass[0], 0, pass.size());
 }
 
 void Manager::readFilePth(const size_t n_thread, const size_t n_block, string& file, const string& path,
@@ -91,9 +91,9 @@ void Manager::enterPass() {
 			pass1 = pass2 = string();
 		}
 	}
-	pass = pass1;
-	memset(&pass1, 0, sizeof pass1);
-	memset(&pass2, 0, sizeof pass2);
+	pass = md5(pass1);
+	memset(&pass1[0], 0, pass1.size());
+	memset(&pass2[0], 0, pass2.size());
 	cout << "\nPassword was set\n";
 	Sleep(SLEEP_TIMEOUT);
 }
@@ -143,40 +143,44 @@ void Manager::codeFile(bool mode) {
 		auto t1 = chrono::high_resolution_clock::now();
 		string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
 
+		auto getEnd = [](size_t& i, size_t& b, size_t& start, size_t& threadCount,
+			size_t& fileSize, size_t& blocksCount, size_t& partSize, size_t& bs) {
+				if (b == blocksCount - 1) {
+					if (i == threadCount - 1)
+						return fileSize;
+					else
+						return start + partSize;
+				}
+				else if (i == threadCount - 1)
+					return bs + (bs * b);
+				else
+					return partSize * (i + 1) + (bs * b);
+		};
+
+		auto getPartEnd = [](size_t& i, size_t& b, size_t& partStart, size_t& threadCount,
+			size_t& fileSize, size_t& blocksCount, size_t& partSize, size_t& bs) {
+				if (b == blocksCount - 1) {
+					if (i == threadCount - 1)
+						return fileSize - (bs * b);
+					else
+						return partStart + partSize;
+				}
+				else if (i == threadCount - 1)
+					return bs;
+				else
+					return partStart + partSize;
+		};
+
 		ofstream ofs(outPath, ofstream::binary);
 		vector<thread> t;
 		for (size_t b = 0; b < blocksCount; b++) {
 			for (size_t i = 0; i < threadCount; i++) {
 
-				end = [i, b, start, threadCount, fileSize,
-					blocksCount, partSize](size_t& bs) {
+				end = getEnd(i, b, start, threadCount, fileSize,
+					blocksCount, partSize, blockSize);
 
-					if (b == blocksCount - 1) {
-						if (i == threadCount - 1)
-							return fileSize;
-						else
-							return start + partSize;
-					}
-					else if (i == threadCount - 1)
-						return bs + (bs * b);
-					else
-						return partSize * (i + 1) + (bs * b);
-				}(blockSize);
-
-				partEnd = [i, b, partStart, threadCount, fileSize,
-					blocksCount, partSize, start, end](size_t& bs) {
-
-					if (b == blocksCount - 1) {
-						if (i == threadCount - 1)
-							return fileSize - (bs * b);
-						else
-							return partStart + partSize;
-					}
-					else if (i == threadCount - 1)
-						return bs;
-					else
-						return partStart + partSize;
-				}(blockSize);
+				partEnd = getPartEnd(i, b, partStart, threadCount,
+					fileSize, blocksCount, partSize, blockSize);
 
 				sum += end - start;
 				//psum += partEnd - partStart;
@@ -216,6 +220,8 @@ void Manager::codeFile(bool mode) {
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
 		setlocale(LC_CTYPE, ".866");
+		memset(&file[0], 0, file.size());
+		memset(&path[0], 0, path.size());
 		file.clear();
 		path.clear();
 	}
@@ -307,7 +313,7 @@ void Manager::actionsMenu() {
 		if (ch == '1')
 			insts.createInstructions();
 		else if (ch == '2') {
-			memset(&insts.acts, 0, sizeof insts.acts);
+			memset(&insts.acts[0], 0, sizeof(Action) * insts.acts.size());
 			cout << "\nActions was unset\n";
 			Sleep(SLEEP_TIMEOUT);
 		}
@@ -315,7 +321,7 @@ void Manager::actionsMenu() {
 			wm.openMessage(path, 2, "Load actions...");
 			if (!path.empty()) {
 				insts.readInstructions(path);
-				memset(&path, 0, sizeof path);
+				memset(&path[0], 0, path.size());
 			}
 		}
 		else if (ch == '4') {
@@ -323,7 +329,7 @@ void Manager::actionsMenu() {
 				wm.openMessage(path, 3, "Save actions...");
 				if (!path.empty()) {
 					insts.writeInstructions(path);
-					memset(&path, 0, sizeof path);
+					memset(&path[0], 0, path.size());
 				}
 			}
 			else {
@@ -347,7 +353,7 @@ void Manager::settingsMenu() {
 		else if (ch == '2')
 			enterPass();
 		else if (ch == '3') {
-			memset(&pass, 0, sizeof pass);
+			memset(&pass[0], 0, pass.size());
 			cout << "\nPassword was unset\n";
 			Sleep(SLEEP_TIMEOUT);
 		}

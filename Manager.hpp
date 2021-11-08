@@ -1,5 +1,6 @@
 #include "HexCoder.hpp"
 #include "WindowManager.hpp"
+#include "md5.hpp"
 #pragma once
 
 typedef chrono::duration<double> fsec;
@@ -41,14 +42,14 @@ private:
   void byTyping(string& message);
   void setBlockSize();
   void enterPass();
-	void toHexString(string& str);
-	void codeFile(bool mode);
+  void toHexString(string& str);
+  void codeFile(bool mode);
   void codeText(bool mode);
-	void fromHexString(string& str);
+  void fromHexString(string& str);
   void setOpenDlgTitle(bool mode);
-	void fileMenu();
+  void fileMenu();
   void actionsMenu();
   void settingsMenu();
-	void mainMenu();
+  void mainMenu();
 };
 
