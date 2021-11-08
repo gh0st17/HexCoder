@@ -52,20 +52,16 @@ void Instructions::writeInstructions(const string& path) {
 }
 
 void Instructions::applyActions(string& data, const size_t start, const size_t end) {
-  for (size_t i = start; i < end; i++)
-    for (const auto& operand : acts) {
-      const auto& op(Ops.at(operand.first));
-      data[i] = op(data[i], operand.second);
-    }
+  for (const auto& operand : acts)
+    for (size_t i = start; i < end; i++)
+      data[i] = Ops.at(operand.first)(data[i], operand.second);
 }
 
 void Instructions::reverseActions(string& data, const size_t start, const size_t end) {
   Actions revActs = Actions(acts.rbegin(), acts.rend());
-  for (size_t i = start; i < end; i++)
-    for (const auto& operand : revActs) {
-      const auto& op(revOps.at(operand.first));
-      data[i] = op(data[i], operand.second);
-    }
+   for (const auto& operand : revActs)
+    for (size_t i = start; i < end; i++)
+      data[i] = revOps.at(operand.first)(data[i], operand.second);
 }
 
 bool Instructions::validateOp(const char& op) {
