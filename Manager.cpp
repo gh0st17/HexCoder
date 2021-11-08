@@ -30,7 +30,7 @@ Manager::~Manager() {
 	memset(&pass[0], 0, pass.size());
 }
 
-void Manager::readFilePth(const size_t n_thread, const size_t n_block, string& file, const string& path,
+void Manager::readFilePth(const size_t n_thread, string& file, const string& path,
 		const size_t start, const size_t partStart, const size_t partEnd, bool mode) {
 	ifstream ifs(path, ifstream::binary);
 	ifs.seekg(start);
@@ -43,9 +43,8 @@ void Manager::readFilePth(const size_t n_thread, const size_t n_block, string& f
 	else if(pass.empty() && !insts.acts.empty())
 		hc.code(file, insts, partStart, partEnd, mode);
 	m_locker.lock();
-	cout << "Thread " << n_thread << " read block " << n_block;
-	cout << " from " << (partStart ? partStart + 1 : 0);
-	cout << " to " << partEnd << " bytes\n";
+	cout << "Thread " << n_thread << ": " << (partStart ? partStart + 1 : 0);
+	cout << "->" << partEnd << " bytes\n";
 	m_locker.unlock();
 }
 
@@ -133,12 +132,13 @@ void Manager::codeFile(bool mode) {
 		if (!mode && path.substr(path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
-		cout << "File size: " << fileSize << " bytes\n";
-		cout << "Block size: " << blockSize << " bytes\n";
-		cout << "Part size: " << partSize << " bytes\n";
+		cout << "   File size: " << fileSize << " bytes\n";
+		cout << "  Block size: " << blockSize << " bytes\n";
+		cout << "   Part size: " << partSize << " bytes\n";
+		cout << "Blocks count: " << blocksCount << endl;
 		cout << "Please wait...\n";
 
-		size_t start = 0, end, partStart = 0, partEnd, sum = 0; //, psum = 0;
+		size_t start = 0, end, partStart = 0, partEnd, sum = 0;
 
 		auto t1 = chrono::high_resolution_clock::now();
 		string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
@@ -183,10 +183,9 @@ void Manager::codeFile(bool mode) {
 					fileSize, blocksCount, partSize, blockSize);
 
 				sum += end - start;
-				//psum += partEnd - partStart;
 				t.push_back(thread(&Manager::readFilePth, this,
-					i + 1, b + 1, ref(file), path, start,
-					partStart, partEnd, mode));
+					i + 1, ref(file), path, start, partStart,
+					partEnd, mode));
 
 				start ^= end;
 				end ^= start;
@@ -197,6 +196,9 @@ void Manager::codeFile(bool mode) {
 				partStart ^= partEnd;
 			}
 			partStart = 0;
+			m_locker.lock();
+			cout << "Reading block " << b + 1 << "...\n";
+			m_locker.unlock();
 			for_each(t.begin(), t.end(), mem_fn(&thread::join));
 			t.clear();
 
