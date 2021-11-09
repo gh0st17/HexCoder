@@ -1,10 +1,11 @@
 #include "Manager.hpp"
 
 void printHelp(string str) {
-  cout << "Usage: " << str << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [-f path] [-h]" << endl;
+  cout << "Usage: " << str << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [-h {None|MD5}] [-f path] [-h]" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
   cout << "-t, --type\t\tt - Text, f - File\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt\n";
+  cout << "-h, --hash\t\tHash algorithm for password. Default is MD5.\n";
   cout << "-f, --file\t\tAbsolute file path\n";
   cout << "-h, --help\t\tPrint this message\n";
   exit(0);
@@ -60,6 +61,18 @@ Params getParams(const int argc, const char* argv[]) {
         }
       }
     }
+    else if (str == "-h" || str == "--hash")
+      if (check(i)) {
+        str = argv[++i];
+        if (str == "None")
+          params.hAlg = HashAlgorithm::None;
+        else if (str == "MD5")
+          params.hAlg = HashAlgorithm::MD5;
+        else {
+          cout << "Unknown hash algorithm " << str << endl;
+          exit(1);
+        }
+      }
     else if (str == "-f" || str == "--file")
       if (check(i)) {
         str = argv[++i];

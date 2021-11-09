@@ -59,9 +59,10 @@ void Manager::byTyping(string& message) {
 
 void Manager::setBlockSize() {
 	cout << "Enter block size as power of 2.\nFor example 30 means 1GiB.\n";
-	cout << "Default is 28 (256 MiB).\n>> ";
+	cout << "Default is 28 (256 MiB). Minimum block size is ";
+	cout << threadCount << " bytes\n>>> ";
 	uint16_t powerOfTwo = 64;
-	while (powerOfTwo > 63) {
+	while (powerOfTwo > 63 || (1Ui64 << powerOfTwo) < threadCount) {
 		cin >> powerOfTwo;
 	}
 	blockSize = 1Ui64 << powerOfTwo;
@@ -90,7 +91,10 @@ void Manager::enterPass() {
 			pass1 = pass2 = string();
 		}
 	}
-	pass = md5(pass1);
+	if (params.hAlg == HashAlgorithm::MD5)
+		pass = md5(pass1);
+	else
+		pass = pass1;
 	memset(&pass1[0], 0, pass1.size());
 	memset(&pass2[0], 0, pass2.size());
 	cout << "\nPassword was set\n";
@@ -114,16 +118,15 @@ void Manager::codeFile(bool mode) {
 		return;
 	}
 	ifs.seekg(0, ifs.end);
-	size_t fileSize = ifs.tellg(),
-		currentBlockSize = blockSize;
+	size_t fileSize = ifs.tellg();
 	ifs.close();
-	if (blockSize > fileSize) {
+	size_t partSize = blockSize / threadCount,
+		currentBlockSize = blockSize, blocksCount = 0;
+	if (blockSize > fileSize + threadCount) {
 		blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
 		cout << "changing block size to file size.\n";
 	}
-	size_t threadCount = thread::hardware_concurrency(),
-		partSize = blockSize / threadCount, blocksCount = 0;
 	while (blocksCount * blockSize < fileSize)
 		blocksCount++;
 
@@ -149,7 +152,7 @@ void Manager::codeFile(bool mode) {
 					if (i == threadCount - 1)
 						return fileSize;
 					else
-						return start + partSize;
+						return start + (fileSize - (bs * b)) / threadCount;
 				}
 				else if (i == threadCount - 1)
 					return bs + (bs * b);
@@ -163,7 +166,7 @@ void Manager::codeFile(bool mode) {
 					if (i == threadCount - 1)
 						return fileSize - (bs * b);
 					else
-						return partStart + partSize;
+						return partStart + (fileSize - (bs * b)) / threadCount;
 				}
 				else if (i == threadCount - 1)
 					return bs;
@@ -200,6 +203,7 @@ void Manager::codeFile(bool mode) {
 			cout << "Reading block " << b + 1 << "...\n";
 			m_locker.unlock();
 			for_each(t.begin(), t.end(), mem_fn(&thread::join));
+			cout << "\r\b";
 			t.clear();
 
 			cout << "Writing block " << b + 1 << " to file...\n";
@@ -362,6 +366,25 @@ void Manager::settingsMenu() {
 		else if (ch == '4') {
 			setBlockSize();
 			cout << "\nBlock size was set to " << blockSize << endl;
+			Sleep(SLEEP_TIMEOUT);
+		}
+		else if (ch == '5') {
+			cout << "Available hash algorithms: None, MD5. ";
+			cout << "Default is MD5.\n>>> ";
+			auto toString = [](HashAlgorithm hAlg) {
+				if (hAlg == HashAlgorithm::MD5)
+					return "MD5";
+				else if (hAlg == HashAlgorithm::None)
+					return "None";
+			};
+			string str = "";
+			while (str != "None" && str != "MD5")
+				cin >> str;
+			if (str == "MD5")
+				params.hAlg = HashAlgorithm::MD5;
+			else if (str == "None")
+				params.hAlg = HashAlgorithm::None;
+			cout << "\nHash algorithm was set to " << toString(params.hAlg) << endl;
 			Sleep(SLEEP_TIMEOUT);
 		}
 		else

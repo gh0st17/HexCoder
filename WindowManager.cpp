@@ -86,7 +86,7 @@ void WindowManager::setTitle(bool mode, Dialog d) {
 	else if (d == Dialog::settings) {
 		SetConsoleTitleA((title + "Settings menu").c_str());
 		cout << "1. Actions\n2. Set password\n3. Unset password\n4. Set block size\n";
-		cout << "Any key to return to previous menu\n\n";
+		cout << "5. Set hash algorithm\nAny key to return to previous menu\n\n";
 	}
 	else if (d == Dialog::text) {
 		if (mode)

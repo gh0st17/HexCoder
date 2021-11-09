@@ -5,6 +5,10 @@
 
 typedef chrono::duration<double> fsec;
 
+enum class HashAlgorithm {
+  None, MD5
+};
+
 enum class OperationType {
   Text, File
 };
@@ -18,6 +22,7 @@ struct Params {
   bool mode = true;
   OperationType type = OperationType::Text;
   EncryptionMetod method = EncryptionMetod::Pass;
+  HashAlgorithm hAlg = HashAlgorithm::MD5;
 };
 
 class Manager {
@@ -35,7 +40,8 @@ private:
   Instructions insts;
   WindowManager wm;
   HexCoder hc;
-  size_t blockSize = 1Ui64 << 28Ui64;
+  size_t blockSize = 1Ui64 << 28Ui64,
+    threadCount = thread::hardware_concurrency();
 
   void readFilePth(const size_t n_thread, string& file, const string& path,
     const size_t start, const size_t partStart, const size_t partEnd, bool mode);
