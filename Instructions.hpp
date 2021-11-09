@@ -22,12 +22,14 @@ private:
 		{'^', [](char ch, uint8_t val) { return (char)(ch ^ val); }},
 		{'<', [](char ch, uint8_t val) { return (char)(((uint8_t)ch << val) | ((uint8_t)ch >> (8Ui8 - val))); }},
 		{'>', [](char ch, uint8_t val) { return (char)(((uint8_t)ch >> val) | ((uint8_t)ch << (8Ui8 - val))); }},
+		{'~', [](char ch, uint8_t val) { return (char)(~ch); }},
 		{'+', [](char ch, uint8_t val) { return (char)(ch + val); }},
 	};
 	const map<char, char (*)(char, uint8_t)> revOps {
 		{'^', [](char ch, uint8_t val) { return (char)(ch ^ val); }},
 		{'<', [](char ch, uint8_t val) { return (char)(((uint8_t)ch >> val) | ((uint8_t)ch << (8Ui8 - val))); }},
 		{'>', [](char ch, uint8_t val) { return (char)(((uint8_t)ch << val) | ((uint8_t)ch >> (8Ui8 - val))); }},
+		{'~', [](char ch, uint8_t val) { return (char)(~ch); }},
 		{'+', [](char ch, uint8_t val) { return (char)(ch - val); }},
 	};
 	bool validateOp(const char& op);
