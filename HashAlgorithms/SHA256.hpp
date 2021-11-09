@@ -1,8 +1,7 @@
-#ifndef SHA256_H
-#define SHA256_H
-
+//Code from https://github.com/System-Glitch
 #include <string>
 #include <array>
+#pragma once
 
 class SHA256 {
 
@@ -48,5 +47,3 @@ private:
 	void pad();
 	void revert(uint8_t * hash);
 };
-
-#endif

@@ -7,7 +7,7 @@
 typedef chrono::duration<double> fsec;
 
 enum class HashAlgorithm {
-  None, MD5
+  None, MD5, SHA256
 };
 
 enum class OperationType {
@@ -24,7 +24,7 @@ struct Params {
   bool mode = true;
   OperationType type = OperationType::Text;
   EncryptionMetod method = EncryptionMetod::Pass;
-  HashAlgorithm hAlg = HashAlgorithm::MD5;
+  HashAlgorithm hAlg = HashAlgorithm::SHA256;
 };
 
 class Manager {

@@ -15,8 +15,8 @@ class WindowManager {
 public:
   WindowManager();
   ~WindowManager() {};
-  void copyText(string& s);
-  void copyDlg(string& s);
+  void copyText(const char* s);
+  void copyDlg(const char* s);
   void openMessage(string& path, int mode, const char* title);
   string openBuffer();
   void setTitle(bool mode, Dialog d);

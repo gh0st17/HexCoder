@@ -1,4 +1,6 @@
-#include "SHA256.h"
+//Code from https://github.com/System-Glitch
+
+#include "SHA256.hpp"
 #include <cstring>
 #include <sstream>
 #include <iomanip>

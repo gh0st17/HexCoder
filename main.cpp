@@ -2,7 +2,7 @@
 
 void printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
-  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5}] ";
+  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5|SHA256}] ";
   cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h]" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
   cout << "-t, --type\t\tt - Text, f - File\n";
