@@ -10,7 +10,8 @@ void Instructions::createInstructions() {
     cout << "Old actions was unset\n";
   }
   cout << "Enter a sequence of types of arithmetical or logical actions to be applied.\n";
-  cout << "Available operators is +, ^, < (cyclic lshift), > (cyclic rshift)\n";
+  cout << "Available operators: +, ~ (not/inverse), ^, < (cyclic lshift), > (cyclic rshift)\n";
+  cout << "For inversion type any value != 0.\n";
   cout << "To complete entering type '0 0'. For example: | 5 | 32 & 21 0 0\n>>> ";
   char op = 1;
   uint16_t val = 1;
