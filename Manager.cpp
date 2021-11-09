@@ -8,10 +8,14 @@ Manager::Manager(Params& params) {
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
 	else if (params.method == EncryptionMetod::Actions)
-		actionsMenu();
+		params.actionPath.empty() ?
+			actionsMenu() :
+			insts.readInstructions(params.actionPath);
 	else {
 		enterPass();
-		actionsMenu();
+		params.actionPath.empty() ?
+			actionsMenu() :
+			insts.readInstructions(params.actionPath);
 	}
 
 	if (params.type == OperationType::Text)
@@ -328,6 +332,8 @@ void Manager::actionsMenu() {
 			if (!path.empty()) {
 				insts.readInstructions(path);
 				memset(&path[0], 0, path.size());
+				cout << "\nActions was read\n";
+				Sleep(750);
 			}
 		}
 		else if (ch == '4') {
@@ -336,6 +342,8 @@ void Manager::actionsMenu() {
 				if (!path.empty()) {
 					insts.writeInstructions(path);
 					memset(&path[0], 0, path.size());
+					cout << "\nActions written\n";
+					Sleep(750);
 				}
 			}
 			else {
@@ -374,7 +382,7 @@ void Manager::settingsMenu() {
 			auto toString = [](HashAlgorithm hAlg) {
 				if (hAlg == HashAlgorithm::MD5)
 					return "MD5";
-				else if (hAlg == HashAlgorithm::None)
+				else
 					return "None";
 			};
 			string str = "";
