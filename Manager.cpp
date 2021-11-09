@@ -399,7 +399,7 @@ void Manager::settingsMenu() {
 					return "None";
 			};
 			string str = "";
-			while (str != "None" && str != "MD5")
+			while (hAlgs.find(str) == hAlgs.end())
 				cin >> str;
 			if (str == "MD5")
 				params.hAlg = HashAlgorithm::MD5;

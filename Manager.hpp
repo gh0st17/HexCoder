@@ -44,6 +44,9 @@ private:
   HexCoder hc;
   size_t blockSize = 1Ui64 << 28Ui64,
     threadCount = thread::hardware_concurrency();
+  const set<string> hAlgs {
+    "None", "MD5", "SHA256", "SHA512"
+  };
 
   void readFilePth(const size_t n_thread, string& file, const string& path,
     const size_t start, const size_t partStart, const size_t partEnd, bool mode);

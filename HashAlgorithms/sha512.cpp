@@ -1,4 +1,4 @@
-//Code from https://github.com/ulwanski
+// Code from https://github.com/ulwanski/sha512
 
 #include "sha512.hpp"
 
@@ -144,10 +144,13 @@ string sha512(const void* dat, size_t len) {
 
   char buf[2 * SHA512::DIGEST_SIZE + 1];
   buf[2 * SHA512::DIGEST_SIZE] = 0;
+  //for (int i = 0; i < SHA512::DIGEST_SIZE; i++)
+  //  sprintf(buf + i * 2, "%02x", digest[i]);
+  //return string(buf);
+  stringstream ss;
   for (int i = 0; i < SHA512::DIGEST_SIZE; i++)
-    sprintf(buf + i * 2, "%02x", digest[i]);
-  return string(buf);
-
+    ss << setfill('0') << setw(2) << right << hex << (unsigned)(unsigned char)(digest[i]);
+  return ss.str();
 }
 
 string sha512(string input) {

@@ -1,9 +1,9 @@
-//Code from https://github.com/ulwanski
+// Code from https://github.com/ulwanski/sha512
 
 #include <string>
 #include <cstring>
-#include <fstream>
-#pragma once
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
