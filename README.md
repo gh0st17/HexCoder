@@ -11,3 +11,4 @@ XOR-based encryption processor with multithread support.
 - Encrypt via logical and arithmetic operators
 - Both ways
 - Settable read file block size
+- Settable hash algorithm for password (MD5, SHA256, SHA512)
