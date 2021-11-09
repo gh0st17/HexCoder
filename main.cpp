@@ -1,12 +1,16 @@
 #include "Manager.hpp"
 
 void printHelp(string str) {
-  cout << "Usage: " << str << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [-h {None|MD5}] [-f path] [-h]" << endl;
+  cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
+  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5}] ";
+  cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h]" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
   cout << "-t, --type\t\tt - Text, f - File\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt\n";
-  cout << "-h, --hash\t\tHash algorithm for password. Default is MD5.\n";
+  cout << "    --hash\t\tHash algorithm for password. Default is MD5.\n";
+  cout << "-b,       \t\tBlock size as power of two.\n";
   cout << "-f, --file\t\tAbsolute file path\n";
+  cout << "-a, --actions\t\tAbsolute actions file path\n";
   cout << "-h, --help\t\tPrint this message\n";
   exit(0);
   return;
@@ -61,7 +65,7 @@ Params getParams(const int argc, const char* argv[]) {
         }
       }
     }
-    else if (str == "-h" || str == "--hash")
+    else if (str == "--hash") {
       if (check(i)) {
         str = argv[++i];
         if (str == "None")
@@ -73,19 +77,60 @@ Params getParams(const int argc, const char* argv[]) {
           exit(1);
         }
       }
-    else if (str == "-f" || str == "--file")
+    }
+    else if (str == "-b") {
+      if (check(i)) {
+        str = argv[++i];
+        uint16_t powerOfTwo;
+        try {
+          powerOfTwo = stoul(str);
+          if ((1Ui64 << powerOfTwo) < thread::hardware_concurrency())
+            throw "Small block size\n";
+        }
+        catch (exception e) {
+          cerr << "Entered not a number.";
+          exit(1);
+        }
+        catch (const char * c) {
+          cerr << c << endl;
+          exit(1);
+        }
+      }
+      else {
+        cout << "Block size did not set! Exiting.\n";
+        exit(1);
+      }
+    }
+    else if (str == "-f" || str == "--file") {
       if (check(i)) {
         str = argv[++i];
         if (filesystem::exists(str))
           params.path = str;
         else {
           cout << "File not exists!\n";
+          exit(1);
         }
       }
       else {
         cout << "File path did not set! Exiting.\n";
         exit(1);
       }
+    }
+    else if (str == "-a" || str == "--actions") {
+      if (check(i)) {
+        str = argv[++i];
+        if (filesystem::exists(str))
+          params.actionPath = str;
+        else {
+          cout << "Actions file not exists!\n";
+          exit(1);
+        }
+      }
+      else {
+        cout << "Actions file path did not set! Exiting.\n";
+        exit(1);
+      }
+    }
     else if (str == "-h" || str == "--help")
       printHelp(argv[0]);
     else {

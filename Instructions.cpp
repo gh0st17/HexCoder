@@ -39,16 +39,12 @@ void Instructions::readInstructions(const string& path) {
   acts.resize(size / sizeof(Action));
   ifs.read(reinterpret_cast<char*>(&acts[0]), size);
   ifs.close();
-  cout << "\nActions was read\n";
-  Sleep(750);
 }
 
 void Instructions::writeInstructions(const string& path) {
   ofstream ofs(path, ifstream::binary);
   ofs.write(reinterpret_cast<const char*>(&acts[0]), acts.size() * sizeof(Action));
   ofs.close();
-  cout << "\nActions written\n";
-  Sleep(750);
 }
 
 void Instructions::applyActions(string& data, const size_t start, const size_t end) {

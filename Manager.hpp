@@ -1,6 +1,7 @@
 #include "HexCoder.hpp"
 #include "WindowManager.hpp"
-#include "md5.hpp"
+#include "HashAlgorithms/md5.hpp"
+#include "HashAlgorithms/SHA256.hpp"
 #pragma once
 
 typedef chrono::duration<double> fsec;
@@ -18,7 +19,8 @@ enum class EncryptionMetod {
 };
 
 struct Params {
-  string path = "";
+  string path;
+  string actionPath;
   bool mode = true;
   OperationType type = OperationType::Text;
   EncryptionMetod method = EncryptionMetod::Pass;
@@ -33,7 +35,6 @@ public:
   ~Manager();
 
 private:
-  bool isCLI = false;
   Params params;
   mutex m_locker;
   string path, pass;
