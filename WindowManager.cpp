@@ -6,10 +6,10 @@ WindowManager::WindowManager() {
 	moveWindow();
 }
 
-void WindowManager::copyText(string& s) {
-	const size_t len = strlen(s.c_str()) + 1;
+void WindowManager::copyText(const char* s) {
+	const size_t len = strlen(s) + 1;
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
-	memcpy(GlobalLock(hMem), s.c_str(), len);
+	memcpy(GlobalLock(hMem), s, len);
 	GlobalUnlock(hMem);
 	OpenClipboard(0);
 	EmptyClipboard();
@@ -17,7 +17,7 @@ void WindowManager::copyText(string& s) {
 	CloseClipboard();
 }
 
-void WindowManager::copyDlg(string& s) {
+void WindowManager::copyDlg(const char* s) {
 	cout << "1. Copy to clipboard\nAny key - no\n\n";
 	char ch = _getch();
 	if (ch == '1') copyText(s);

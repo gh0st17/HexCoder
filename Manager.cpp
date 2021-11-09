@@ -97,6 +97,15 @@ void Manager::enterPass() {
 	}
 	if (params.hAlg == HashAlgorithm::MD5)
 		pass = md5(pass1);
+	else if (params.hAlg == HashAlgorithm::SHA256) {
+		SHA256 sha;
+		sha.update(pass1);
+		uint8_t* digest = sha.digest();
+		pass = SHA256::toString(sha.digest());
+		delete[] digest;
+	}
+	else if (params.hAlg == HashAlgorithm::SHA512)
+		pass = sha512(pass1);
 	else
 		pass = pass1;
 	memset(&pass1[0], 0, pass1.size());
@@ -218,7 +227,7 @@ void Manager::codeFile(bool mode) {
 		}
 		ofs.close();
 
-		auto t2 = std::chrono::high_resolution_clock::now();
+		auto t2 = chrono::high_resolution_clock::now();
 		fsec duration = t2 - t1;
 
 		if (currentBlockSize > fileSize) {
@@ -276,7 +285,7 @@ void Manager::codeText(bool mode) {
 	setlocale(LC_CTYPE, ".866");
 	cout << (mode ? "Encrypted message:\n" : "Message:\n") << message << "\n\n";
 	setlocale(LC_CTYPE, ".1251");
-	wm.copyDlg(message);
+	wm.copyDlg(message.c_str());
 }
 
 void Manager::fromHexString(string& str) {
@@ -377,19 +386,27 @@ void Manager::settingsMenu() {
 			Sleep(SLEEP_TIMEOUT);
 		}
 		else if (ch == '5') {
-			cout << "Available hash algorithms: None, MD5. ";
-			cout << "Default is MD5.\n>>> ";
+			cout << "Available hash algorithms: None, MD5, SHA256, SHA512. ";
+			cout << "Default is SHA256.\n>>> ";
 			auto toString = [](HashAlgorithm hAlg) {
 				if (hAlg == HashAlgorithm::MD5)
 					return "MD5";
+				else if (hAlg == HashAlgorithm::SHA256)
+					return "SHA256";
+				else if (hAlg == HashAlgorithm::SHA512)
+					return "SHA512";
 				else
 					return "None";
 			};
 			string str = "";
-			while (str != "None" && str != "MD5")
+			while (hAlgs.find(str) == hAlgs.end())
 				cin >> str;
 			if (str == "MD5")
 				params.hAlg = HashAlgorithm::MD5;
+			else if (str == "SHA256")
+				params.hAlg = HashAlgorithm::SHA256;
+			else if (str == "SHA512")
+				params.hAlg = HashAlgorithm::SHA512;
 			else if (str == "None")
 				params.hAlg = HashAlgorithm::None;
 			cout << "\nHash algorithm was set to " << toString(params.hAlg) << endl;
