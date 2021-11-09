@@ -95,7 +95,7 @@ Params getParams(const int argc, const char* argv[]) {
           cerr << "Entered not a number.";
           exit(1);
         }
-        catch (const char * c) {
+        catch (const char* c) {
           cerr << c << endl;
           exit(1);
         }
@@ -146,11 +146,11 @@ Params getParams(const int argc, const char* argv[]) {
 }
 
 int main(int argc, const char* argv[]) {
-	if (argc > 1) {
+  if (argc > 1) {
     Params params = getParams(argc, argv);
     Manager m(params);
-	}
-	else
+  }
+  else
     Manager m;
-	return 0;
+  return 0;
 }
