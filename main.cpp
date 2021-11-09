@@ -2,7 +2,7 @@
 
 void printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
-  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5|SHA256}] ";
+  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] ";
   cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h]" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
   cout << "-t, --type\t\tt - Text, f - File\n";
@@ -72,6 +72,10 @@ Params getParams(const int argc, const char* argv[]) {
           params.hAlg = HashAlgorithm::None;
         else if (str == "MD5")
           params.hAlg = HashAlgorithm::MD5;
+        else if (str == "SHA256")
+          params.hAlg = HashAlgorithm::SHA256;
+        else if (str == "SHA512")
+          params.hAlg = HashAlgorithm::SHA512;
         else {
           cout << "Unknown hash algorithm " << str << endl;
           exit(1);

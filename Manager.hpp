@@ -2,12 +2,13 @@
 #include "WindowManager.hpp"
 #include "HashAlgorithms/md5.hpp"
 #include "HashAlgorithms/SHA256.hpp"
+#include "HashAlgorithms/sha512.hpp"
 #pragma once
 
 typedef chrono::duration<double> fsec;
 
 enum class HashAlgorithm {
-  None, MD5, SHA256
+  None, MD5, SHA256, SHA512
 };
 
 enum class OperationType {

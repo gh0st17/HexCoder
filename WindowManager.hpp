@@ -22,7 +22,7 @@ public:
   void setTitle(bool mode, Dialog d);
 
 private:
-  const string title = "HexCoder Processor v1.5.3 [By Ghost17] | ";
+  const string title = "HexCoder Processor v1.5.4 [By Ghost17] | ";
 
   void moveWindow();
 };

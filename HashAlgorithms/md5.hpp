@@ -3,5 +3,7 @@
 #include <cstring>
 #pragma once
 
-std::string md5(std::string dat);
-std::string md5(const void* dat, size_t len);
+using namespace std;
+
+string md5(string dat);
+string md5(const void* dat, size_t len);
