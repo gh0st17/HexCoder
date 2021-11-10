@@ -2,9 +2,10 @@
 
 void printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
-  cout << " {-m {p|a|b}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] ";
+  cout << " {-m {p|a|b}} {-t {t|f}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] ";
   cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h]" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
+  cout << "-t, --type\t\tt - Text, f - File\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt\n";
   cout << "    --hash\t\tHash algorithm for password. Default is MD5.\n";
   cout << "-b,       \t\tBlock size as power of two.\n";
@@ -34,6 +35,19 @@ Params getParams(const int argc, const char* argv[]) {
           params.method = EncryptionMetod::Both;
         else {
           cout << "Unknown method " << str << endl;
+          exit(1);
+        }
+      }
+    }
+    else if (str == "-t" || str == "--type") {
+      if (check(i)) {
+        str = argv[++i];
+        if (str == "t")
+          params.type = OperationType::Text;
+        else if (str == "f")
+          params.type = OperationType::File;
+        else {
+          cout << "Unknown operation type " << str << endl;
           exit(1);
         }
       }
