@@ -3,11 +3,11 @@
 void printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
   cout << " {-m {p|a|b}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] ";
-  cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h] | -c" << endl;
-  cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
-  cout << "-d, --direction\t\te - Encrypt, d - Decrypt\n";
-  cout << "    --hash\t\tHash algorithm for password. Default is MD5\n";
-  cout << "-b,       \t\tBlock size as power of two\n";
+  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-h] | -c" << endl;
+  cout << "-m, --method\t\tp - Password, a - Actions, b - Both. Default Password\n";
+  cout << "-d, --direction\t\te - Encrypt, d - Decrypt. Default Encrypt\n";
+  cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
+  cout << "-b,       \t\tBlock size as power of two. Default 28 (256Mb)\n";
   cout << "-f, --file\t\tAbsolute file path\n";
   cout << "-a, --actions\t\tAbsolute actions file path\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
