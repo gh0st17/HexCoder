@@ -65,10 +65,10 @@ void Manager::enterPass() {
 		cout << "Enter password: ";
 		cin >> pass1;
 
-		cout << "\nRe-enter password: ";
-		cin >> pass1;
+		cout << "Re-enter password: ";
+		cin >> pass2;
 		if (pass1 != pass2) {
-			cout << "\nPassword mismatch!\n";
+			cout << "Password mismatch!\n";
 			pass1 = pass2 = string();
 		}
 	}
