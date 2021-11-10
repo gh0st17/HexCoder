@@ -63,20 +63,10 @@ void Manager::enterPass() {
 	string pass1, pass2;
 	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
 		cout << "Enter password: ";
-		char c = getchar();
-		while (c != 13) {
-			pass1.push_back(c);
-			cout << '*';
-			c = getchar();
-		}
+		cin >> pass1;
 
 		cout << "\nRe-enter password: ";
-		c = getchar();
-		while (c != 13) {
-			pass2.push_back(c);
-			cout << '*';
-			c = getchar();
-		}
+		cin >> pass1;
 		if (pass1 != pass2) {
 			cout << "\nPassword mismatch!\n";
 			pass1 = pass2 = string();
