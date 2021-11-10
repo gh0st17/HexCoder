@@ -1,32 +1,19 @@
 #include "Manager.hpp"
 
-#define SLEEP_TIMEOUT 1500
-
 Manager::Manager(Params& params) {
-	//path = params.path;
+	if (params.method == EncryptionMetod::Pass)
+		enterPass();
+	else if (params.method == EncryptionMetod::Actions)
+		insts.readInstructions(params.actionPath);
+	else {
+		enterPass();
+		insts.readInstructions(params.actionPath);
+	}
 
-	//if (params.method == EncryptionMetod::Pass)
-	//	enterPass();
-	//else if (params.method == EncryptionMetod::Actions)
-	//	params.actionPath.empty() ?
-	//		actionsMenu() :
-	//		insts.readInstructions(params.actionPath);
-	//else {
-	//	enterPass();
-	//	params.actionPath.empty() ?
-	//		actionsMenu() :
-	//		insts.readInstructions(params.actionPath);
-	//}
-
-	//if (params.type == OperationType::Text)
-	//	codeText(params.mode);
-	//else if (params.type == OperationType::File && !path.empty())
-	//	codeFile(params.mode);
-	//else
-	//	cout << "File path did not set! Exiting.\n";
-}
-
-Manager::Manager() {
+	if (!params.path.empty())
+		codeFile(params.mode);
+	else
+		cout << "File path did not set! Exiting.\n";
 }
 
 Manager::~Manager() {
@@ -66,19 +53,19 @@ void Manager::enterPass() {
 	string pass1, pass2;
 	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
 		cout << "Enter password: ";
-		char c = _getch();
+		char c = getchar();
 		while (c != 13) {
 			pass1.push_back(c);
 			cout << '*';
-			c = _getch();
+			c = getchar();
 		}
 
 		cout << "\nRe-enter password: ";
-		c = _getch();
+		c = getchar();
 		while (c != 13) {
 			pass2.push_back(c);
 			cout << '*';
-			c = _getch();
+			c = getchar();
 		}
 		if (pass1 != pass2) {
 			cout << "\nPassword mismatch!\n";
@@ -107,7 +94,6 @@ void Manager::codeFile(bool mode) {
 	ifstream ifs(path, ifstream::binary);
 	if (!ifs) {
 		cerr << "Error opening file! Canceled.\n";
-		_getch();
 		return;
 	}
 	ifs.seekg(0, ifs.end);
@@ -232,7 +218,6 @@ void Manager::codeFile(bool mode) {
 		cerr << e.what() << endl;
 	}
 	catch (char* c) {
-		cerr << c << endl;;
+		cerr << c << endl;
 	}
-	_getch();
 }
