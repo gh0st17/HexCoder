@@ -3,11 +3,17 @@
 Manager::Manager(Params& params) {
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
-	else if (params.method == EncryptionMetod::Actions)
-		insts.readInstructions(params.actionPath);
 	else {
-		enterPass();
-		insts.readInstructions(params.actionPath);
+		if (params.actionPath.empty()) {
+			cout << "File path for actions did not set! Exiting.\n";
+			return;
+		}
+		if (params.method == EncryptionMetod::Actions)
+			insts.readInstructions(params.actionPath);
+		else {
+			enterPass();
+			insts.readInstructions(params.actionPath);
+		}
 	}
 
 	if (!params.path.empty())
