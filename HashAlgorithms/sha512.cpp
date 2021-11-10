@@ -142,14 +142,9 @@ string sha512(const void* dat, size_t len) {
   ctx.update((const unsigned char*)dat, len);
   ctx.final(digest);
 
-  char buf[2 * SHA512::DIGEST_SIZE + 1];
-  buf[2 * SHA512::DIGEST_SIZE] = 0;
-  //for (int i = 0; i < SHA512::DIGEST_SIZE; i++)
-  //  sprintf(buf + i * 2, "%02x", digest[i]);
-  //return string(buf);
   stringstream ss;
   for (int i = 0; i < SHA512::DIGEST_SIZE; i++)
-    ss << setfill('0') << setw(2) << right << hex << (unsigned)(unsigned char)(digest[i]);
+    ss << setfill('0') << setw(2) << right << hex << (unsigned short)(unsigned char)(digest[i]);
   return ss.str();
 }
 

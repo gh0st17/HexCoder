@@ -117,7 +117,7 @@ void Manager::enterPass() {
 void Manager::toHexString(string& str) {
 	stringstream res;
 	for (const auto& x : str)
-		res << uppercase << hex << (unsigned)(unsigned char)(x) << ' ';
+		res << uppercase << hex << (unsigned short)(unsigned char)(x) << ' ';
 	str = res.str();
 	str.pop_back();
 }
