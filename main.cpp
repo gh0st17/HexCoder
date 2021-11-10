@@ -11,8 +11,6 @@ void printHelp(string str) {
   cout << "-f, --file\t\tAbsolute file path\n";
   cout << "-a, --actions\t\tAbsolute actions file path\n";
   cout << "-h, --help\t\tPrint this message\n";
-  exit(0);
-  return;
 }
 
 Params getParams(const int argc, const char* argv[]) {
@@ -26,46 +24,19 @@ Params getParams(const int argc, const char* argv[]) {
     if (str == "-m" || str == "--method") {
       if (check(i)) {
         str = argv[++i];
-        if (str == "p")
-          params.method = EncryptionMetod::Pass;
-        else if (str == "a")
-          params.method = EncryptionMetod::Actions;
-        else if (str == "b")
-          params.method = EncryptionMetod::Both;
-        else {
-          cout << "Unknown method " << str << endl;
-          exit(1);
-        }
+        params.setMethod(str);
       }
     }
     else if (str == "-d" || str == "--direction") {
       if (check(i)) {
         str = argv[++i];
-        if (str == "e")
-          params.mode = true;
-        else if (str == "d")
-          params.mode = false;
-        else {
-          cout << "Unknown direction " << str << endl;
-          exit(1);
-        }
+        params.setDirection(str);
       }
     }
     else if (str == "--hash") {
       if (check(i)) {
         str = argv[++i];
-        if (str == "None")
-          params.hAlg = HashAlgorithm::None;
-        else if (str == "MD5")
-          params.hAlg = HashAlgorithm::MD5;
-        else if (str == "SHA256")
-          params.hAlg = HashAlgorithm::SHA256;
-        else if (str == "SHA512")
-          params.hAlg = HashAlgorithm::SHA512;
-        else {
-          cout << "Unknown hash algorithm " << str << endl;
-          exit(1);
-        }
+        params.setHashAlg(str);
       }
     }
     else if (str == "-b") {
@@ -94,12 +65,7 @@ Params getParams(const int argc, const char* argv[]) {
     else if (str == "-f" || str == "--file") {
       if (check(i)) {
         str = argv[++i];
-        if (filesystem::exists(str))
-          params.path = str;
-        else {
-          cout << "File not exists!\n";
-          exit(1);
-        }
+        params.setFilePath(str);
       }
       else {
         cout << "File path did not set! Exiting.\n";
@@ -109,12 +75,7 @@ Params getParams(const int argc, const char* argv[]) {
     else if (str == "-a" || str == "--actions") {
       if (check(i)) {
         str = argv[++i];
-        if (filesystem::exists(str))
-          params.actionPath = str;
-        else {
-          cout << "Actions file not exists!\n";
-          exit(1);
-        }
+        params.setActionsFilePath(str);
       }
       else {
         cout << "Actions file path did not set! Exiting.\n";
@@ -136,7 +97,9 @@ int main(int argc, const char* argv[]) {
     Params params = getParams(argc, argv);
     Manager m(params);
   }
-  else
-    Manager m;
+  else {
+    printHelp(argv[0]);
+    getchar();
+  }
   return 0;
 }
