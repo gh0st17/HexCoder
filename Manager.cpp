@@ -7,27 +7,28 @@ Manager::Manager(Params& params) {
 
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
-	else if (params.method == EncryptionMetod::Actions)
-		params.actionPath.empty() ?
-			actionsMenu() :
-			insts.readInstructions(params.actionPath);
+	else if (params.method == EncryptionMetod::Actions) {
+		//params.actionPath.empty() ?
+			//actionsMenu() :
+			//insts.readInstructions(params.actionPath);
+	}
 	else {
 		enterPass();
-		params.actionPath.empty() ?
-			actionsMenu() :
-			insts.readInstructions(params.actionPath);
+		//params.actionPath.empty() ?
+			//actionsMenu()
+			//insts.readInstructions(params.actionPath);
 	}
 
-	if (params.type == OperationType::Text)
+	/*if (params.type == OperationType::Text)
 		codeText(params.mode);
 	else if (params.type == OperationType::File && !path.empty())
 		codeFile(params.mode);
 	else
-		cout << "File path did not set! Exiting.\n";
+		cout << "File path did not set! Exiting.\n";*/
 }
 
 Manager::Manager() {
-	mainMenu();
+
 }
 
 Manager::~Manager() {
@@ -50,15 +51,6 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	cout << "Thread " << n_thread << ": " << (partStart ? partStart + 1 : 0);
 	cout << "->" << partEnd << " bytes\n";
 	m_locker.unlock();
-}
-
-void Manager::byTyping(string& message) {
-	cout << "Enter message: ";
-	setlocale(LC_CTYPE, ".866");
-	while (message.empty())
-		getline(cin, message);
-	setlocale(LC_CTYPE, ".1251");
-	cout << '\n';
 }
 
 void Manager::setBlockSize() {
@@ -114,16 +106,7 @@ void Manager::enterPass() {
 	Sleep(SLEEP_TIMEOUT);
 }
 
-void Manager::toHexString(string& str) {
-	stringstream res;
-	for (const auto& x : str)
-		res << uppercase << hex << (unsigned short)(unsigned char)(x) << ' ';
-	str = res.str();
-	str.pop_back();
-}
-
 void Manager::codeFile(bool mode) {
-	wm.setTitle(mode, Dialog::file);
 	ifstream ifs(path, ifstream::binary);
 	if (!ifs) {
 		cerr << "Error opening file! Canceled.\n";
@@ -255,191 +238,4 @@ void Manager::codeFile(bool mode) {
 		cerr << c << endl;;
 	}
 	_getch();
-}
-
-void Manager::codeText(bool mode) {
-	wm.setTitle(mode, Dialog::text);
-
-	char ch = _getch();
-	string message;
-	if (ch == '1')
-		byTyping(message);
-	else if (ch == '2')
-		message = wm.openBuffer();
-	else
-		return;
-
-	if (!mode)
-		fromHexString(message);
-
-	if (!pass.empty() && insts.acts.empty())
-		hc.code(message, pass, 0, message.size());
-	else if (!pass.empty() && !insts.acts.empty())
-		hc.code(message, pass, 0, message.size(), insts, mode);
-	else if(pass.empty() && !insts.acts.empty())
-		hc.code(message, insts, 0, message.size(), mode);
-
-	if (mode)
-		toHexString(message);
-
-	setlocale(LC_CTYPE, ".866");
-	cout << (mode ? "Encrypted message:\n" : "Message:\n") << message << "\n\n";
-	setlocale(LC_CTYPE, ".1251");
-	wm.copyDlg(message.c_str());
-}
-
-void Manager::fromHexString(string& str) {
-	unsigned short c;
-	stringstream ss(str);
-	string result = "";
-	while (ss >> hex >> c)
-		result.push_back((char)c);
-	str = result;
-}
-
-void Manager::setOpenDlgTitle(bool mode){
-		string title;
-		if (mode) title = "Encrypt file...";
-		else      title = "Decrypt file...";
-		wm.openMessage(path, mode, title.c_str());
-}
-
-void Manager::fileMenu() {
-	char ch;
-	bool exit = 0;
-	while (!exit) {
-		wm.setTitle(0, Dialog::file);
-		ch = _getch();
-		if (ch == '1') {
-			setOpenDlgTitle(true);
-			codeFile(true);
-		}
-		else if (ch == '2') {
-			setOpenDlgTitle(false);
-			codeFile(false);
-		}
-		else
-			exit = 1;
-	}
-}
-
-void Manager::actionsMenu() {
-	char ch;
-	bool exit = 0;
-	while (!exit) {
-		wm.setTitle(0, Dialog::actions);
-		ch = _getch();
-		if (ch == '1')
-			insts.createInstructions();
-		else if (ch == '2') {
-			memset(&insts.acts[0], 0, sizeof(Action) * insts.acts.size());
-			cout << "\nActions was unset\n";
-			Sleep(SLEEP_TIMEOUT);
-		}
-		else if (ch == '3') {
-			wm.openMessage(path, 2, "Load actions...");
-			if (!path.empty()) {
-				insts.readInstructions(path);
-				memset(&path[0], 0, path.size());
-				cout << "\nActions was read\n";
-				Sleep(750);
-			}
-		}
-		else if (ch == '4') {
-			if (!insts.acts.empty()) {
-				wm.openMessage(path, 3, "Save actions...");
-				if (!path.empty()) {
-					insts.writeInstructions(path);
-					memset(&path[0], 0, path.size());
-					cout << "\nActions written\n";
-					Sleep(750);
-				}
-			}
-			else {
-				cout << "Actions not set\n";
-				Sleep(SLEEP_TIMEOUT);
-			}
-		}
-		else
-			exit = 1;
-	}
-}
-
-void Manager::settingsMenu() {
-	char ch;
-	bool exit = 0;
-	while (!exit) {
-		wm.setTitle(0, Dialog::settings);
-		ch = _getch();
-		if (ch == '1')
-			actionsMenu();
-		else if (ch == '2')
-			enterPass();
-		else if (ch == '3') {
-			memset(&pass[0], 0, pass.size());
-			cout << "\nPassword was unset\n";
-			Sleep(SLEEP_TIMEOUT);
-		}
-		else if (ch == '4') {
-			setBlockSize();
-			cout << "\nBlock size was set to " << blockSize << endl;
-			Sleep(SLEEP_TIMEOUT);
-		}
-		else if (ch == '5') {
-			cout << "Available hash algorithms: None, MD5, SHA256, SHA512. ";
-			cout << "Default is SHA256.\n>>> ";
-			auto toString = [](HashAlgorithm hAlg) {
-				if (hAlg == HashAlgorithm::MD5)
-					return "MD5";
-				else if (hAlg == HashAlgorithm::SHA256)
-					return "SHA256";
-				else if (hAlg == HashAlgorithm::SHA512)
-					return "SHA512";
-				else
-					return "None";
-			};
-			string str = "";
-			while (hAlgs.find(str) == hAlgs.end())
-				cin >> str;
-			if (str == "MD5")
-				params.hAlg = HashAlgorithm::MD5;
-			else if (str == "SHA256")
-				params.hAlg = HashAlgorithm::SHA256;
-			else if (str == "SHA512")
-				params.hAlg = HashAlgorithm::SHA512;
-			else if (str == "None")
-				params.hAlg = HashAlgorithm::None;
-			cout << "\nHash algorithm was set to " << toString(params.hAlg) << endl;
-			Sleep(SLEEP_TIMEOUT);
-		}
-		else
-			exit = 1;
-	}
-}
-
-void Manager::mainMenu() {
-	char ch;
-	bool exit = 0;
-	while (!exit) {
-		wm.setTitle(0, Dialog::mainMenu);
-		ch = _getch();
-
-		if ((ch == '1' || ch == '2' || ch == '3') &&
-					(pass.empty() && insts.acts.empty())) {
-			cout << "Set password or actions first!\n";
-			Sleep(SLEEP_TIMEOUT);
-			continue;
-		}
-
-		if (ch == '1')
-			codeText(true);
-		else if (ch == '2')
-			codeText(false);
-		else if (ch == '3')
-			fileMenu();
-		else if (ch == '4')
-			settingsMenu();
-		else
-			exit = 1;
-	}
 }

@@ -1,5 +1,4 @@
 #include "HexCoder.hpp"
-#include "WindowManager.hpp"
 #include "HashAlgorithms/md5.hpp"
 #include "HashAlgorithms/SHA256.hpp"
 #include "HashAlgorithms/sha512.hpp"
@@ -11,10 +10,6 @@ enum class HashAlgorithm {
   None, MD5, SHA256, SHA512
 };
 
-enum class OperationType {
-  Text, File
-};
-
 enum class EncryptionMetod {
   Pass, Actions, Both
 };
@@ -23,7 +18,6 @@ struct Params {
   string path;
   string actionPath;
   bool mode = true;
-  OperationType type = OperationType::Text;
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 };
@@ -40,7 +34,6 @@ private:
   mutex m_locker;
   string path, pass;
   Instructions insts;
-  WindowManager wm;
   HexCoder hc;
   size_t blockSize = 1Ui64 << 28Ui64,
     threadCount = thread::hardware_concurrency();
