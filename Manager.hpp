@@ -11,6 +11,7 @@ class Manager {
 
 public:
   Manager(Params& params);
+  Manager();
   ~Manager();
 
 private:
@@ -24,8 +25,9 @@ private:
 
   void readFilePth(const size_t n_thread, string& file, const string& path,
     const size_t start, const size_t partStart, const size_t partEnd, bool mode);
-  void setBlockSize();
+  //void setBlockSize();
   void enterPass();
   void codeFile(bool mode);
+  void actionsMenu();
 };
 

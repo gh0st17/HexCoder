@@ -11,8 +11,6 @@ void printHelp(string str) {
   cout << "-f, --file\t\tAbsolute file path\n";
   cout << "-a, --actions\t\tAbsolute actions file path\n";
   cout << "-h, --help\t\tPrint this message\n";
-  exit(0);
-  return;
 }
 
 Params getParams(const int argc, const char* argv[]) {
@@ -99,7 +97,9 @@ int main(int argc, const char* argv[]) {
     Params params = getParams(argc, argv);
     Manager m(params);
   }
-  else
-    Manager m;
+  else {
+    printHelp(argv[0]);
+    getchar();
+  }
   return 0;
 }

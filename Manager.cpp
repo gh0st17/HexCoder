@@ -16,6 +16,10 @@ Manager::Manager(Params& params) {
 		cout << "File path did not set! Exiting.\n";
 }
 
+Manager::Manager() {
+	actionsMenu();
+}
+
 Manager::~Manager() {
 	memset(&pass[0], 0, pass.size());
 }
@@ -38,16 +42,16 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	m_locker.unlock();
 }
 
-void Manager::setBlockSize() {
-	cout << "Enter block size as power of 2.\nFor example 30 means 1GiB.\n";
-	cout << "Default is 28 (256 MiB). Minimum block size is ";
-	cout << threadCount << " bytes\n>>> ";
-	uint16_t powerOfTwo = 64;
-	while (powerOfTwo > 63 || (1Ui64 << powerOfTwo) < threadCount) {
-		cin >> powerOfTwo;
-	}
-	blockSize = 1Ui64 << powerOfTwo;
-}
+//void Manager::setBlockSize() {
+//	cout << "Enter block size as power of 2.\nFor example 30 means 1GiB.\n";
+//	cout << "Default is 28 (256 MiB). Minimum block size is ";
+//	cout << threadCount << " bytes\n>>> ";
+//	uint16_t powerOfTwo = 64;
+//	while (powerOfTwo > 63 || (1Ui64 << powerOfTwo) < threadCount) {
+//		cin >> powerOfTwo;
+//	}
+//	blockSize = 1Ui64 << powerOfTwo;
+//}
 
 void Manager::enterPass() {
 	string pass1, pass2;
@@ -91,7 +95,7 @@ void Manager::enterPass() {
 }
 
 void Manager::codeFile(bool mode) {
-	ifstream ifs(path, ifstream::binary);
+	ifstream ifs(params.path, ifstream::binary);
 	if (!ifs) {
 		cerr << "Error opening file! Canceled.\n";
 		return;
@@ -111,7 +115,7 @@ void Manager::codeFile(bool mode) {
 
 	try {
 		string file = string(blockSize, '\0');
-		if (!mode && path.substr(path.size() - 3) != "hcf")
+		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
 		cout << "   File size: " << fileSize << " bytes\n";
@@ -120,10 +124,8 @@ void Manager::codeFile(bool mode) {
 		cout << "Blocks count: " << blocksCount << endl;
 		cout << "Please wait...\n";
 
-		size_t start = 0, end, partStart = 0, partEnd, sum = 0;
-
-		auto t1 = chrono::high_resolution_clock::now();
-		string outPath = (mode ? path + ".hcf" : path.substr(0, path.size() - 4));
+		string outPath = (mode ? params.path + ".hcf" :
+			params.path.substr(0, params.path.size() - 4));
 
 		auto getEnd = [](size_t& i, size_t& b, size_t& start, size_t& threadCount,
 			size_t& fileSize, size_t& blocksCount, size_t& partSize, size_t& bs) {
@@ -153,6 +155,10 @@ void Manager::codeFile(bool mode) {
 					return partStart + partSize;
 		};
 
+
+		size_t start = 0, end, partStart = 0, partEnd, sum = 0;
+
+		auto t1 = chrono::high_resolution_clock::now();
 		ofstream ofs(outPath, ofstream::binary);
 		vector<thread> t;
 		for (size_t b = 0; b < blocksCount; b++) {
@@ -166,7 +172,7 @@ void Manager::codeFile(bool mode) {
 
 				sum += end - start;
 				t.push_back(thread(&Manager::readFilePth, this,
-					i + 1, ref(file), path, start, partStart,
+					i + 1, ref(file), params.path, start, partStart,
 					partEnd, mode));
 
 				start ^= end;
@@ -206,9 +212,10 @@ void Manager::codeFile(bool mode) {
 		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
 		setlocale(LC_CTYPE, ".866");
 		memset(&file[0], 0, file.size());
-		memset(&path[0], 0, path.size());
+		memset(&params.path[0], 0, params.path.size());
 		file.clear();
-		path.clear();
+		params.path.clear();
+		getchar();
 	}
 	catch (bad_alloc const&) {
 		cerr << "Can't allocate memory size " << blockSize << " bytes.\n";
@@ -219,5 +226,29 @@ void Manager::codeFile(bool mode) {
 	}
 	catch (char* c) {
 		cerr << c << endl;
+	}
+}
+
+void Manager::actionsMenu() {
+	char ch;
+	bool exit = 0;
+	while (!exit) {
+		cout << "1. (Re-)Create actions\n2. Save actions\nAny key to exit\n\n>>>";
+		ch = getchar();
+		if (ch == '1')
+			insts.createInstructions();
+		else if (ch == '2') {
+			if (!insts.acts.empty()) {
+				string filename;
+				cin >> filename;
+				insts.writeInstructions(filesystem::current_path().u8string() + filename + ".hca");
+				cout << "\nActions written\n";
+			}
+			else {
+				cout << "Actions not set\n";
+			}
+		}
+		else
+			exit = 1;
 	}
 }
