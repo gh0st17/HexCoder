@@ -13,6 +13,7 @@ struct Params {
   string path;
   string actionPath;
   bool mode = true;
+  bool isCreate = false;
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 

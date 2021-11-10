@@ -3,13 +3,15 @@
 void printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
   cout << " {-m {p|a|b}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] ";
-  cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h]" << endl;
+  cout << "[-b blockSize] [-f filePath] [-a actionsFilePath] [-h] | -c" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt\n";
-  cout << "    --hash\t\tHash algorithm for password. Default is MD5.\n";
-  cout << "-b,       \t\tBlock size as power of two.\n";
+  cout << "    --hash\t\tHash algorithm for password. Default is MD5\n";
+  cout << "-b,       \t\tBlock size as power of two\n";
   cout << "-f, --file\t\tAbsolute file path\n";
   cout << "-a, --actions\t\tAbsolute actions file path\n";
+  cout << "-c, --create\t\tOpen menu for creating and save actions\n";
+  cout << "            \t\tOther parameters will be ignore\n";
   cout << "-h, --help\t\tPrint this message\n";
 }
 
@@ -82,6 +84,10 @@ Params getParams(const int argc, const char* argv[]) {
         exit(1);
       }
     }
+    else if (str == "-c" || str == "--create") {
+      params.isCreate = true;
+      break;
+    }
     else if (str == "-h" || str == "--help")
       printHelp(argv[0]);
     else {
@@ -95,7 +101,10 @@ Params getParams(const int argc, const char* argv[]) {
 int main(int argc, const char* argv[]) {
   if (argc > 1) {
     Params params = getParams(argc, argv);
-    Manager m(params);
+    if (params.isCreate)
+      Manager m();
+    else
+      Manager m(params);
   }
   else {
     printHelp(argv[0]);
