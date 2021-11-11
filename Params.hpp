@@ -14,12 +14,14 @@ struct Params {
   string actionPath;
   bool mode = true;
   bool isCreate = false;
+  size_t blockSize = 1Ui64 << 28Ui64;
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 
   void setMethod(const string& method);
   void setDirection(const string& direction);
   void setHashAlg(const string& hashAlg);
+  void setBlockSize(const string& blockSize);
   void setFilePath(const string& filePath);
   void setActionsFilePath(const string& actionsFilePath);
 };

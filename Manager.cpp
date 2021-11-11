@@ -85,23 +85,23 @@ void Manager::codeFile(bool mode) {
 	ifs.seekg(0, ifs.end);
 	size_t fileSize = ifs.tellg();
 	ifs.close();
-	size_t partSize = blockSize / threadCount,
-		currentBlockSize = blockSize, blocksCount = 0;
-	if (blockSize > fileSize + threadCount) {
-		blockSize = fileSize;
+	size_t partSize = params.blockSize / threadCount,
+		currentBlockSize = params.blockSize, blocksCount = 0;
+	if (params.blockSize > fileSize + threadCount) {
+		params.blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
 		cout << "changing block size to file size.\n";
 	}
-	while (blocksCount * blockSize < fileSize)
+	while (blocksCount * params.blockSize < fileSize)
 		blocksCount++;
 
 	try {
-		string file = string(blockSize, '\0');
+		string file = string(params.blockSize, '\0');
 		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
 		cout << "   File size: " << fileSize << " bytes\n";
-		cout << "  Block size: " << blockSize << " bytes\n";
+		cout << "  Block size: " << params.blockSize << " bytes\n";
 		cout << "   Part size: " << partSize << " bytes\n";
 		cout << "Blocks count: " << blocksCount << endl;
 		cout << "Please wait...\n";
@@ -147,10 +147,10 @@ void Manager::codeFile(bool mode) {
 			for (size_t i = 0; i < threadCount; i++) {
 
 				end = getEnd(i, b, start, threadCount, fileSize,
-					blocksCount, partSize, blockSize);
+					blocksCount, partSize, params.blockSize);
 
 				partEnd = getPartEnd(i, b, partStart, threadCount,
-					fileSize, blocksCount, partSize, blockSize);
+					fileSize, blocksCount, partSize, params.blockSize);
 
 				sum += end - start;
 				t.push_back(thread(&Manager::readFilePth, this,
@@ -175,7 +175,7 @@ void Manager::codeFile(bool mode) {
 
 			cout << "Writing block " << b + 1 << " to file...\n";
 			if (b == blocksCount - 1)
-				ofs.write(&file[0], fileSize - (blockSize * b));
+				ofs.write(&file[0], fileSize - (params.blockSize * b));
 			else
 				ofs << file;
 		}
@@ -185,9 +185,9 @@ void Manager::codeFile(bool mode) {
 		fsec duration = t2 - t1;
 
 		if (currentBlockSize > fileSize) {
-			blockSize = currentBlockSize;
+			params.blockSize = currentBlockSize;
 			cout << "Warning: block size returned to ";
-			cout << blockSize << " bytes.\n";
+			cout << params.blockSize << " bytes.\n";
 		}
 		setlocale(LC_CTYPE, ".1251");
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
@@ -200,7 +200,7 @@ void Manager::codeFile(bool mode) {
 		getchar();
 	}
 	catch (bad_alloc const&) {
-		cerr << "Can't allocate memory size " << blockSize << " bytes.\n";
+		cerr << "Can't allocate memory size " << params.blockSize << " bytes.\n";
 		cerr << "Try reduce block size.\n";
 	}
 	catch (exception e) {
