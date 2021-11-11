@@ -215,7 +215,7 @@ void Manager::actionsMenu() {
 	char ch;
 	bool exit = 0;
 	while (!exit) {
-		cout << "1. (Re-)Create actions\n2. Save actions\nAny key to exit\n\n>>>";
+		cout << "1. (Re-)Create actions\n2. Save actions\nAny key to exit\n\n>>> ";
 		ch = getchar();
 		if (ch == '1')
 			insts.createInstructions();
