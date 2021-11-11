@@ -89,7 +89,7 @@ int main(int argc, const char* argv[]) {
   if (argc > 1) {
     Params params = getParams(argc, argv);
     if (params.isCreate)
-      Manager m();
+      Manager m;
     else
       Manager m(params);
   }
