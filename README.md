@@ -50,4 +50,7 @@ Create actions
 2. Follow the instruction
 3. Enter **2** to save
 4. Enter filename
- 
+
+View actions file
+
+`.\HexCoder-MSVC.exe -a actions.hca --view`
