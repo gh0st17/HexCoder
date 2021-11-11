@@ -170,7 +170,6 @@ void Manager::codeFile(bool mode) {
 			cout << "Reading block " << b + 1 << "...\n";
 			m_locker.unlock();
 			for_each(t.begin(), t.end(), mem_fn(&thread::join));
-			cout << "\r\b";
 			t.clear();
 
 			cout << "Writing block " << b + 1 << " to file...\n";
