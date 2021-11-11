@@ -39,6 +39,23 @@ void Params::setHashAlg(const string& hashAlg) {
   }
 }
 
+void Params::setBlockSize(const string& blockSize) {
+  uint16_t powerOfTwo;
+  try {
+    powerOfTwo = stoul(blockSize);
+    if ((1Ui64 << powerOfTwo) < thread::hardware_concurrency())
+      throw "Small block size\n";
+  }
+  catch (exception e) {
+    cerr << "Entered not a number.";
+    exit(1);
+  }
+  catch (const char* c) {
+    cerr << c << endl;
+    exit(1);
+  }
+}
+
 void Params::setFilePath(const string& filePath) {
   if (filesystem::exists(filePath))
     path = filePath;

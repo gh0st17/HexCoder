@@ -1,13 +1,20 @@
 #include "Manager.hpp"
 
 Manager::Manager(Params& params) {
+	this->params = params;
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
-	else if (params.method == EncryptionMetod::Actions)
-		insts.readInstructions(params.actionPath);
 	else {
-		enterPass();
-		insts.readInstructions(params.actionPath);
+		if (params.actionPath.empty()) {
+			cout << "File path for actions did not set! Exiting.\n";
+			return;
+		}
+		if (params.method == EncryptionMetod::Actions)
+			insts.readInstructions(params.actionPath);
+		else {
+			enterPass();
+			insts.readInstructions(params.actionPath);
+		}
 	}
 
 	if (!params.path.empty())
@@ -54,44 +61,19 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 //}
 
 void Manager::enterPass() {
-	string pass1, pass2;
-	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
-		cout << "Enter password: ";
-		char c = getchar();
-		while (c != 13) {
-			pass1.push_back(c);
-			cout << '*';
-			c = getchar();
-		}
-
-		cout << "\nRe-enter password: ";
-		c = getchar();
-		while (c != 13) {
-			pass2.push_back(c);
-			cout << '*';
-			c = getchar();
-		}
-		if (pass1 != pass2) {
-			cout << "\nPassword mismatch!\n";
-			pass1 = pass2 = string();
-		}
-	}
+	cout << "Enter password: ";
+	cin >> pass;
 	if (params.hAlg == HashAlgorithm::MD5)
-		pass = md5(pass1);
+		pass = md5(pass);
 	else if (params.hAlg == HashAlgorithm::SHA256) {
 		SHA256 sha;
-		sha.update(pass1);
+		sha.update(pass);
 		uint8_t* digest = sha.digest();
 		pass = SHA256::toString(sha.digest());
 		delete[] digest;
 	}
 	else if (params.hAlg == HashAlgorithm::SHA512)
-		pass = sha512(pass1);
-	else
-		pass = pass1;
-	memset(&pass1[0], 0, pass1.size());
-	memset(&pass2[0], 0, pass2.size());
-	cout << "\nPassword was set\n";
+		pass = sha512(pass);
 }
 
 void Manager::codeFile(bool mode) {
@@ -103,23 +85,23 @@ void Manager::codeFile(bool mode) {
 	ifs.seekg(0, ifs.end);
 	size_t fileSize = ifs.tellg();
 	ifs.close();
-	size_t partSize = blockSize / threadCount,
-		currentBlockSize = blockSize, blocksCount = 0;
-	if (blockSize > fileSize + threadCount) {
-		blockSize = fileSize;
+	size_t partSize = params.blockSize / threadCount,
+		currentBlockSize = params.blockSize, blocksCount = 0;
+	if (params.blockSize > fileSize + threadCount) {
+		params.blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
 		cout << "changing block size to file size.\n";
 	}
-	while (blocksCount * blockSize < fileSize)
+	while (blocksCount * params.blockSize < fileSize)
 		blocksCount++;
 
 	try {
-		string file = string(blockSize, '\0');
+		string file = string(params.blockSize, '\0');
 		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
 		cout << "   File size: " << fileSize << " bytes\n";
-		cout << "  Block size: " << blockSize << " bytes\n";
+		cout << "  Block size: " << params.blockSize << " bytes\n";
 		cout << "   Part size: " << partSize << " bytes\n";
 		cout << "Blocks count: " << blocksCount << endl;
 		cout << "Please wait...\n";
@@ -165,10 +147,10 @@ void Manager::codeFile(bool mode) {
 			for (size_t i = 0; i < threadCount; i++) {
 
 				end = getEnd(i, b, start, threadCount, fileSize,
-					blocksCount, partSize, blockSize);
+					blocksCount, partSize, params.blockSize);
 
 				partEnd = getPartEnd(i, b, partStart, threadCount,
-					fileSize, blocksCount, partSize, blockSize);
+					fileSize, blocksCount, partSize, params.blockSize);
 
 				sum += end - start;
 				t.push_back(thread(&Manager::readFilePth, this,
@@ -193,7 +175,7 @@ void Manager::codeFile(bool mode) {
 
 			cout << "Writing block " << b + 1 << " to file...\n";
 			if (b == blocksCount - 1)
-				ofs.write(&file[0], fileSize - (blockSize * b));
+				ofs.write(&file[0], fileSize - (params.blockSize * b));
 			else
 				ofs << file;
 		}
@@ -203,9 +185,9 @@ void Manager::codeFile(bool mode) {
 		fsec duration = t2 - t1;
 
 		if (currentBlockSize > fileSize) {
-			blockSize = currentBlockSize;
+			params.blockSize = currentBlockSize;
 			cout << "Warning: block size returned to ";
-			cout << blockSize << " bytes.\n";
+			cout << params.blockSize << " bytes.\n";
 		}
 		setlocale(LC_CTYPE, ".1251");
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
@@ -218,7 +200,7 @@ void Manager::codeFile(bool mode) {
 		getchar();
 	}
 	catch (bad_alloc const&) {
-		cerr << "Can't allocate memory size " << blockSize << " bytes.\n";
+		cerr << "Can't allocate memory size " << params.blockSize << " bytes.\n";
 		cerr << "Try reduce block size.\n";
 	}
 	catch (exception e) {
