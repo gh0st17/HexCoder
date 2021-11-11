@@ -10,7 +10,8 @@ typedef chrono::duration<double> fsec;
 class Manager {
 
 public:
-  Manager(Params& params);
+  Manager(const Params& params);
+  Manager(const string& actionPath);
   Manager();
   ~Manager();
 

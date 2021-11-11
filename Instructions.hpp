@@ -14,6 +14,7 @@ public:
 	void createInstructions();
 	void readInstructions(const string& path);
 	void writeInstructions(const string& path);
+	void viewInstructions();
 	void applyActions(string& data, const size_t start, const size_t end);
 	void reverseActions(string& data, const size_t start, const size_t end);
 

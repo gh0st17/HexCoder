@@ -1,6 +1,6 @@
 #include "Manager.hpp"
 
-Manager::Manager(Params& params) {
+Manager::Manager(const Params& params) {
 	this->params = params;
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
@@ -21,6 +21,16 @@ Manager::Manager(Params& params) {
 		codeFile(params.mode);
 	else
 		cout << "File path did not set! Exiting.\n";
+}
+
+
+Manager::Manager(const string& actionPath) {
+	if (actionPath.empty()) {
+		cout << "File path for actions did not set! Exiting.\n";
+		return;
+	}
+	insts.readInstructions(actionPath);
+	insts.viewInstructions();
 }
 
 Manager::Manager() {
@@ -170,7 +180,6 @@ void Manager::codeFile(bool mode) {
 			cout << "Reading block " << b + 1 << "...\n";
 			m_locker.unlock();
 			for_each(t.begin(), t.end(), mem_fn(&thread::join));
-			cout << "\r\b";
 			t.clear();
 
 			cout << "Writing block " << b + 1 << " to file...\n";
