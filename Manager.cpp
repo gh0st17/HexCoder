@@ -1,6 +1,7 @@
 #include "Manager.hpp"
 
 Manager::Manager(Params& params) {
+	this->params = params;
 	if (params.method == EncryptionMetod::Pass)
 		enterPass();
 	else {
@@ -60,34 +61,19 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 //}
 
 void Manager::enterPass() {
-	string pass1, pass2;
-	while (pass1 != pass2 || pass1.empty() || pass2.empty()) {
-		cout << "Enter password: ";
-		cin >> pass1;
-
-		cout << "Re-enter password: ";
-		cin >> pass2;
-		if (pass1 != pass2) {
-			cout << "Password mismatch!\n";
-			pass1 = pass2 = string();
-		}
-	}
+	cout << "Enter password: ";
+	cin >> pass;
 	if (params.hAlg == HashAlgorithm::MD5)
-		pass = md5(pass1);
+		pass = md5(pass);
 	else if (params.hAlg == HashAlgorithm::SHA256) {
 		SHA256 sha;
-		sha.update(pass1);
+		sha.update(pass);
 		uint8_t* digest = sha.digest();
 		pass = SHA256::toString(sha.digest());
 		delete[] digest;
 	}
 	else if (params.hAlg == HashAlgorithm::SHA512)
-		pass = sha512(pass1);
-	else
-		pass = pass1;
-	memset(&pass1[0], 0, pass1.size());
-	memset(&pass2[0], 0, pass2.size());
-	cout << "\nPassword was set\n";
+		pass = sha512(pass);
 }
 
 void Manager::codeFile(bool mode) {
