@@ -28,6 +28,7 @@ void Instructions::createInstructions() {
   cout << "Entered:\n";
   for (const auto& x : acts)
     cout << x.first << ' ' << +x.second << endl;
+  cin.ignore();
 }
 
 void Instructions::readInstructions(const string& path) {
