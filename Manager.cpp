@@ -222,9 +222,13 @@ void Manager::actionsMenu() {
 		else if (ch == '2') {
 			if (!insts.acts.empty()) {
 				string filename;
+				cout << "Enter file name: ";
 				cin >> filename;
-				insts.writeInstructions(filesystem::current_path().u8string() + filename + ".hca");
+				filename = filesystem::current_path().u8string() + '\\' + filename + ".hca";
+				cout << filename;
+				insts.writeInstructions(filename);
 				cout << "\nActions written\n";
+				cin.ignore();
 			}
 			else {
 				cout << "Actions not set\n";
