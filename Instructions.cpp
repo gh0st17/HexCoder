@@ -26,8 +26,7 @@ void Instructions::createInstructions() {
     }
   }
   cout << "Entered:\n";
-  for (const auto& x : acts)
-    cout << x.first << ' ' << +x.second << endl;
+  viewInstructions();
   cin.ignore();
 }
 
@@ -45,6 +44,11 @@ void Instructions::writeInstructions(const string& path) {
   ofstream ofs(path, ifstream::binary);
   ofs.write(reinterpret_cast<const char*>(&acts[0]), acts.size() * sizeof(Action));
   ofs.close();
+}
+
+void Instructions::viewInstructions() {
+  for (const auto& x : acts)
+    cout << x.first << ' ' << +x.second << endl;
 }
 
 void Instructions::applyActions(string& data, const size_t start, const size_t end) {

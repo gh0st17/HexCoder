@@ -11,7 +11,9 @@ void printHelp(string str) {
   cout << "-f, --file\t\tFile path\n";
   cout << "-a, --actions\t\tActions file path\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
-  cout << "            \t\tOther parameters will be ignore\n";
+  cout << "            \t\tParameters above will be ignore\n";
+  cout << "    --view\t\tView actions\n";
+  cout << "            \t\tParameters above will be ignore\n";
   cout << "-h, --help\t\tPrint this message\n";
 }
 
@@ -71,6 +73,10 @@ Params getParams(const int argc, const char* argv[]) {
         exit(1);
       }
     }
+    else if (str == "--view") {
+      params.isView = true;
+      break;
+    }
     else if (str == "-c" || str == "--create") {
       params.isCreate = true;
       break;
@@ -90,6 +96,8 @@ int main(int argc, const char* argv[]) {
     Params params = getParams(argc, argv);
     if (params.isCreate)
       Manager m;
+    else if (params.isView)
+      Manager m(params.actionPath);
     else
       Manager m(params);
   }

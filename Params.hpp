@@ -14,6 +14,7 @@ struct Params {
   string actionPath;
   bool mode = true;
   bool isCreate = false;
+  bool isView = false;
   size_t blockSize = 1Ui64 << 28Ui64;
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
