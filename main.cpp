@@ -9,7 +9,7 @@ void printHelp(string str) {
   cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
   cout << "-b,       \t\tBlock size as power of two. Default 28 (256Mb)\n";
   cout << "-f, --file\t\tFile path\n";
-  cout << "-a, --actions\t\Actions file path\n";
+  cout << "-a, --actions\t\tActions file path\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
   cout << "            \t\tOther parameters will be ignore\n";
   cout << "-h, --help\t\tPrint this message\n";
