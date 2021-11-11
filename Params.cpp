@@ -45,6 +45,7 @@ void Params::setBlockSize(const string& blockSize) {
     powerOfTwo = stoul(blockSize);
     if ((1Ui64 << powerOfTwo) < thread::hardware_concurrency())
       throw "Small block size\n";
+    this->blockSize = 1Ui64 << powerOfTwo;
   }
   catch (exception e) {
     cerr << "Entered not a number.";

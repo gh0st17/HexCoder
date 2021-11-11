@@ -6,7 +6,7 @@ Instructions::~Instructions() {
 
 void Instructions::createInstructions() {
   if (!acts.empty()) {
-    memset(&acts, 0, sizeof acts);
+    memset(&acts[0], 0, acts.size());
     cout << "Old actions was unset\n";
   }
   cout << "Enter a sequence of types of arithmetical or logical actions to be applied.\n";
