@@ -21,16 +21,13 @@ Params::Params(const int argc, const char* argv[]) {
         setActionsFilePath(argv[++i]);
     }
     else if (paramsWithoutVal.find(str) != paramsWithoutVal.end()) {
-      if (str == "--view") {
+      if (str == "--view")
         isView = true;
-        break;
-      }
-      else if (str == "-c" || str == "--create") {
+      else if (str == "-c" || str == "--create")
         isCreate = true;
-        break;
-      }
       else if (str == "-h" || str == "--help")
         printHelp(argv[0]);
+      break;
     }
     else if (paramsWithVal.find(str) == paramsWithVal.end() &&
       paramsWithoutVal.find(str) == paramsWithoutVal.end()) {
@@ -129,9 +126,9 @@ void Params::setBlockSize(const string& blockSize) {
     powerOfTwo = stoul(blockSize);
     if (powerOfTwo > 63)
       throw "Too big block size\n";
-    if ((1Ui64 << powerOfTwo) < thread::hardware_concurrency())
+    if ((1ULL << powerOfTwo) < thread::hardware_concurrency())
       throw "Too small block size\n";
-    this->blockSize = 1Ui64 << powerOfTwo;
+    this->blockSize = 1ULL << powerOfTwo;
   }
   catch (exception e) {
     cerr << "Entered not a number.";
