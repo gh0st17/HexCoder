@@ -224,7 +224,7 @@ void Manager::actionsMenu() {
 				cin >> filename;
 #ifdef _WIN64
 				filename = filesystem::current_path().u8string() + '\\' + filename + ".hca";
-#elif
+#else
 				filename = filesystem::current_path().u8string() + '/' + filename + ".hca";
 #endif
 				cout << filename;
