@@ -12,7 +12,7 @@ int main(int argc, const char* argv[]) {
   }
   else {
     Params::printHelp(argv[0]);
-    getchar();
+    cin;
   }
   return 0;
 }

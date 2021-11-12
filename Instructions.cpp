@@ -20,14 +20,16 @@ void Instructions::createInstructions() {
     if (op != 0 && val != 0 && validateOp(op)) {
       if (val == 0 || val > 255)
         continue;
-      if ((op == '<' || op == '>') && val > 7)
+      if ((op == '<' || op == '>') && val > 7) {
         val %= 8;
+        if (!val)
+          continue;
+      }
       acts.push_back(make_pair(op, val));
     }
   }
   cout << "Entered:\n";
   viewInstructions();
-  cin.ignore();
 }
 
 void Instructions::readInstructions(const string& path) {
@@ -51,11 +53,23 @@ void Instructions::readInstructions(const string& path) {
     cerr << e.what() << endl;
   }
   Actions::iterator next;
+  char op;
+  uint8_t val;
   for (Actions::iterator it = acts.begin(); it != acts.end();) {
-    if (!validateOp(it->first))
+    op = it->first;
+    val = it->second;
+    if (!validateOp(op) || val == 0)
       it = acts.erase(it);
-    else
+    else {
+      if ((op == '<' || op == '>') && val > 7) {
+        it->second %= 8;
+        if (!it->second) {
+          it = acts.erase(it);
+          continue;
+        }
+      }
       ++it;
+    }
   }
   if (acts.empty()) {
     cout << "Actions not found";
