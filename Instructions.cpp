@@ -41,12 +41,12 @@ void Instructions::readInstructions(const string& path) {
     ifs.read(reinterpret_cast<char*>(&acts[0]), size);
     ifs.close();
   }
-  catch (exception e) {
-    cerr << e.what() << endl;
-    exit(1);
-  }
   catch (bad_alloc const&) {
     cerr << "Can't allocate memory size " << size << " bytes for actions";
+    exit(1);
+  }
+  catch (exception e) {
+    cerr << e.what() << endl;
     exit(1);
   }
   Actions::iterator next;
