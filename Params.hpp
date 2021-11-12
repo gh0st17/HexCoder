@@ -10,14 +10,33 @@ enum class EncryptionMetod {
 };
 
 struct Params {
+
+public:
   string path;
   string actionPath;
   bool mode = true;
   bool isCreate = false;
   bool isView = false;
-  size_t blockSize = 1Ui64 << 28Ui64;
+  size_t blockSize = 1ULL << 28ULL;
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
+
+  Params() {}
+  Params(const int argc, const char* argv[]);
+  static void printHelp(string str);
+  Params operator=(const Params& rhs);
+
+private:
+  const set<string> paramsWithoutVal{
+    "-c","--create","--view",
+    "-h","--help"
+  };
+
+  const set<string> paramsWithVal{
+    "-m","--method","-d","--direction",
+    "--hash","-b","-f","--file",
+    "-a","--actions"
+  };
 
   void setMethod(const string& method);
   void setDirection(const string& direction);
