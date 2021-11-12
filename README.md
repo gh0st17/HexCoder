@@ -56,3 +56,5 @@ Create actions
 View actions file
 
 `.\HexCoder-MSVC.exe -a actions.hca --view`
+    
+Also available reading **any** file as actions file
