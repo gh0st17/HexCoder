@@ -23,7 +23,6 @@ Manager::Manager(const Params& params) {
 		cout << "File path did not set! Exiting.\n";
 }
 
-
 Manager::Manager(const string& actionPath) {
 	if (actionPath.empty()) {
 		cout << "File path for actions did not set! Exiting.\n";
@@ -84,13 +83,13 @@ void Manager::codeFile(bool mode) {
 	ifs.seekg(0, ifs.end);
 	size_t fileSize = ifs.tellg();
 	ifs.close();
-	size_t partSize = params.blockSize / threadCount,
-		currentBlockSize = params.blockSize, blocksCount = 0;
+	size_t currentBlockSize = params.blockSize, blocksCount = 0;
 	if (params.blockSize > fileSize + threadCount) {
 		params.blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
 		cout << "changing block size to file size.\n";
 	}
+	size_t partSize = params.blockSize / threadCount;
 	while (blocksCount * params.blockSize < fileSize)
 		blocksCount++;
 
@@ -196,7 +195,7 @@ void Manager::codeFile(bool mode) {
 		fill(params.path.begin(), params.path.end(), 0);
 		file.clear();
 		params.path.clear();
-		getchar();
+		cin;
 	}
 	catch (bad_alloc const&) {
 		cerr << "Can't allocate memory size " << params.blockSize << " bytes for block\n";
@@ -215,7 +214,7 @@ void Manager::actionsMenu() {
 	bool exit = 0;
 	while (!exit) {
 		cout << "1. (Re-)Create actions\n2. Save actions\nAny key to exit\n\n>>> ";
-		ch = getchar();
+		cin >> ch;
 		if (ch == '1')
 			insts.createInstructions();
 		else if (ch == '2') {
@@ -223,11 +222,14 @@ void Manager::actionsMenu() {
 				string filename;
 				cout << "Enter file name: ";
 				cin >> filename;
+#ifdef _WIN64
 				filename = filesystem::current_path().u8string() + '\\' + filename + ".hca";
+#elif
+				filename = filesystem::current_path().u8string() + '/' + filename + ".hca";
+#endif
 				cout << filename;
 				insts.writeInstructions(filename);
 				cout << "\nActions written\n";
-				cin.ignore();
 			}
 			else {
 				cout << "Actions not set\n";
