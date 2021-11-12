@@ -55,7 +55,7 @@ Params::Params(const int argc, const char* argv[]) {
 void Params::printHelp(string str) {
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
   cout << " [-m {p|a|b}] [-d {e|d}] [--hash {None|MD5|SHA256|SHA512}] ";
-  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-h] | -c" << endl;
+  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] | -c | --view | -h" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both. Default Password\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt. Default Encrypt\n";
   cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
