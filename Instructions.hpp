@@ -34,4 +34,5 @@ private:
 		{'+', [](char ch, uint8_t val) { return (char)(ch - val); }},
 	};
 	bool validateOp(const char& op);
+	void zero();
 };

@@ -1,12 +1,12 @@
 #include "Instructions.hpp"
 
 Instructions::~Instructions() {
-  memset(&acts[0], 0, acts.size());
+  zero();
 }
 
 void Instructions::createInstructions() {
   if (!acts.empty()) {
-    memset(&acts[0], 0, acts.size());
+    zero();
     cout << "Old actions was unset\n";
   }
   cout << "Enter a sequence of types of arithmetical or logical actions to be applied.\n";
@@ -76,4 +76,8 @@ void Instructions::reverseActions(string& data, const size_t start, const size_t
 
 bool Instructions::validateOp(const char& op) {
   return Ops.find(op) != Ops.end();
+}
+
+void Instructions::zero() {
+  fill(acts.begin(), acts.end(), Action(0, 0));
 }
