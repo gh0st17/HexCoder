@@ -35,9 +35,15 @@ void Instructions::readInstructions(const string& path) {
   ifs.seekg(0, ifs.end);
   size_t size = ifs.tellg();
   ifs.seekg(0, ifs.beg);
-  acts.resize(size / sizeof(Action));
-  ifs.read(reinterpret_cast<char*>(&acts[0]), size);
-  ifs.close();
+  try {
+    acts.resize(size / sizeof(Action));
+    ifs.read(reinterpret_cast<char*>(&acts[0]), size);
+    ifs.close();
+  }
+  catch (bad_alloc const&) {
+    cerr << "Can't allocate memory size " << size << " bytes for actions";
+    exit(1);
+  }
   Actions::iterator next;
   for (Actions::iterator it = acts.begin(); it != acts.end();) {
     if (!validateOp(it->first))
