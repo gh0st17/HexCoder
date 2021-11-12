@@ -36,6 +36,8 @@ void Instructions::readInstructions(const string& path) {
     ifstream ifs(path, ifstream::binary);
     ifs.seekg(0, ifs.end);
     size = ifs.tellg();
+    if (size & 1)
+      size--;
     ifs.seekg(0, ifs.beg);
     acts.resize(size / sizeof(Action));
     ifs.read(reinterpret_cast<char*>(&acts[0]), size);
@@ -47,7 +49,6 @@ void Instructions::readInstructions(const string& path) {
   }
   catch (exception e) {
     cerr << e.what() << endl;
-    exit(1);
   }
   Actions::iterator next;
   for (Actions::iterator it = acts.begin(); it != acts.end();) {
@@ -58,6 +59,7 @@ void Instructions::readInstructions(const string& path) {
   }
   if (acts.empty()) {
     cout << "Actions not found";
+    exit(1);
   }
 }
 
