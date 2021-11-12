@@ -1,7 +1,7 @@
 #include "Instructions.hpp"
 
 Instructions::~Instructions() {
-  memset(&acts, 0, sizeof acts);
+  memset(&acts[0], 0, acts.size());
 }
 
 void Instructions::createInstructions() {

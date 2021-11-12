@@ -59,17 +59,6 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	m_locker.unlock();
 }
 
-//void Manager::setBlockSize() {
-//	cout << "Enter block size as power of 2.\nFor example 30 means 1GiB.\n";
-//	cout << "Default is 28 (256 MiB). Minimum block size is ";
-//	cout << threadCount << " bytes\n>>> ";
-//	uint16_t powerOfTwo = 64;
-//	while (powerOfTwo > 63 || (1Ui64 << powerOfTwo) < threadCount) {
-//		cin >> powerOfTwo;
-//	}
-//	blockSize = 1Ui64 << powerOfTwo;
-//}
-
 void Manager::enterPass() {
 	cout << "Enter password: ";
 	cin >> pass;
