@@ -31,11 +31,14 @@ void Instructions::createInstructions() {
 }
 
 void Instructions::readInstructions(const string& path) {
-  ifstream ifs(path, ifstream::binary);
-  ifs.seekg(0, ifs.end);
-  size_t size = ifs.tellg();
-  ifs.seekg(0, ifs.beg);
+  size_t size;
   try {
+    ifstream ifs(path, ifstream::binary);
+    ifs.seekg(0, ifs.end);
+    size = ifs.tellg();
+    if (size & 1)
+      size--;
+    ifs.seekg(0, ifs.beg);
     acts.resize(size / sizeof(Action));
     ifs.read(reinterpret_cast<char*>(&acts[0]), size);
     ifs.close();
@@ -44,12 +47,19 @@ void Instructions::readInstructions(const string& path) {
     cerr << "Can't allocate memory size " << size << " bytes for actions";
     exit(1);
   }
+  catch (exception e) {
+    cerr << e.what() << endl;
+  }
   Actions::iterator next;
   for (Actions::iterator it = acts.begin(); it != acts.end();) {
     if (!validateOp(it->first))
       it = acts.erase(it);
     else
       ++it;
+  }
+  if (acts.empty()) {
+    cout << "Actions not found";
+    exit(1);
   }
 }
 
