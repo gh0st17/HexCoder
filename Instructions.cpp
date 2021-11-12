@@ -38,6 +38,13 @@ void Instructions::readInstructions(const string& path) {
   acts.resize(size / sizeof(Action));
   ifs.read(reinterpret_cast<char*>(&acts[0]), size);
   ifs.close();
+  Actions::iterator next;
+  for (Actions::iterator it = acts.begin(); it != acts.end();) {
+    if (!validateOp(it->first))
+      it = acts.erase(it);
+    else
+      ++it;
+  }
 }
 
 void Instructions::writeInstructions(const string& path) {
