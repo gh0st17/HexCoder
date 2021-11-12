@@ -16,7 +16,7 @@ XOR-based encryption processor with multithread support.
 # How to use:
 
 ```
-Usage: HexCoder-MSVC.exe {-m {p|a|b}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512}] [-b blockSize] {-f filePath} [-a actionsFilePath] [-h] | -c
+Usage: HexCoder-MSVC.exe [-m {p|a|b}] [-d {e|d}] [--hash {None|MD5|SHA256|SHA512}] [-b blockSize] {-f filePath} [-a actionsFilePath] | -c | --view | -h
 -m, --method            p - Password, a - Actions, b - Both. Default Password
 -d, --direction         e - Encrypt, d - Decrypt. Default Encrypt
     --hash              Hash algorithm for password. Default is SHA256
@@ -24,7 +24,9 @@ Usage: HexCoder-MSVC.exe {-m {p|a|b}} {-d {e|d}} [--hash {None|MD5|SHA256|SHA512
 -f, --file              File path
 -a, --actions           Actions file path
 -c, --create            Open menu for creating and save actions
-                        Other parameters will be ignore
+                        Parameters above will be ignore
+    --view              View actions
+                        Parameters above will be ignore
 -h, --help              Print this message
 ```
   
