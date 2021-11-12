@@ -34,7 +34,9 @@ Params::Params(const int argc, const char* argv[]) {
       cout << "Unknown parameter " << str << endl;
       exit(1);
     }
-    else if (paramsWithVal.find(str) == paramsWithVal.end()) {
+    else if (paramsWithVal.find(str) != paramsWithVal.end() &&
+      (paramsWithVal.find(argv[i + 1]) != paramsWithVal.end() ||
+      paramsWithoutVal.find(argv[i + 1]) == paramsWithoutVal.end())) {
       cout << "Missing parameter value after " << str << endl;
       exit(1);
     }
