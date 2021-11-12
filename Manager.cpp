@@ -199,8 +199,8 @@ void Manager::codeFile(bool mode) {
 		getchar();
 	}
 	catch (bad_alloc const&) {
-		cerr << "Can't allocate memory size " << params.blockSize << " bytes.\n";
-		cerr << "Try reduce block size.\n";
+		cerr << "Can't allocate memory size " << params.blockSize << " bytes for block\n";
+		cerr << "Try reduce block size";
 	}
 	catch (exception e) {
 		cerr << e.what() << endl;
