@@ -127,13 +127,13 @@ void Params::setBlockSize(const string& blockSize) {
   try {
     powerOfTwo = stoul(blockSize);
     if (powerOfTwo > 63)
-      throw "Too big block size\n";
+      throw "Too big block size";
     if ((1ULL << powerOfTwo) < thread::hardware_concurrency())
-      throw "Too small block size\n";
+      throw "Too small block size";
     this->blockSize = 1ULL << powerOfTwo;
   }
   catch (exception e) {
-    cerr << "Entered not a number.";
+    cerr << "Entered not a number";
     exit(1);
   }
   catch (const char* c) {

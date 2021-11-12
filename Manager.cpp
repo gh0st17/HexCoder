@@ -38,7 +38,7 @@ Manager::Manager() {
 }
 
 Manager::~Manager() {
-	memset(&pass[0], 0, pass.size());
+	fill(pass.begin(), pass.end(), 0);
 }
 
 void Manager::readFilePth(const size_t n_thread, string& file, const string& path,
@@ -96,6 +96,7 @@ void Manager::codeFile(bool mode) {
 
 	try {
 		string file = string(params.blockSize, '\0');
+		string dt = params.path.substr(params.path.size() - 3);
 		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
@@ -191,8 +192,8 @@ void Manager::codeFile(bool mode) {
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
 		setlocale(LC_CTYPE, ".866");
-		memset(&file[0], 0, file.size());
-		memset(&params.path[0], 0, params.path.size());
+		fill(file.begin(), file.end(), 0);
+		fill(params.path.begin(), params.path.end(), 0);
 		file.clear();
 		params.path.clear();
 		getchar();
