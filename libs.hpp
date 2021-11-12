@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <algorithm>
 #include <iostream>
-#include <string.h>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
