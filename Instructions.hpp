@@ -21,15 +21,15 @@ public:
 private:
 	const map<char, char (*)(char, uint8_t)> Ops {
 		{'^', [](char ch, uint8_t val) { return (char)( ch ^ val); }},
-		{'<', [](char ch, uint8_t val) { return (char)(_rotl8(ch, val)); }},
-		{'>', [](char ch, uint8_t val) { return (char)(_rotr8(ch, val)); }},
+		{'<', [](char ch, uint8_t val) { return (char)(_ROL8(ch, val)); }},
+		{'>', [](char ch, uint8_t val) { return (char)(_ROR8(ch, val)); }},
 		{'~', [](char ch, uint8_t val) { return (char)(~ch); }},
 		{'+', [](char ch, uint8_t val) { return (char)(ch + val); }},
 	};
 	const map<char, char (*)(char, uint8_t)> revOps {
 		{'^', [](char ch, uint8_t val) { return (char)(ch ^ val); }},
-		{'<', [](char ch, uint8_t val) { return (char)(_rotr8(ch, val)); }},
-		{'>', [](char ch, uint8_t val) { return (char)(_rotl8(ch, val)); }},
+		{'<', [](char ch, uint8_t val) { return (char)(_ROR8(ch, val)); }},
+		{'>', [](char ch, uint8_t val) { return (char)(_ROL8(ch, val)); }},
 		{'~', [](char ch, uint8_t val) { return (char)(~ch); }},
 		{'+', [](char ch, uint8_t val) { return (char)(ch - val); }},
 	};
