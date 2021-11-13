@@ -18,6 +18,5 @@
 #else
 #include <x86intrin.h>
 #endif
-#include <intrin.h>
 
 using namespace std;
