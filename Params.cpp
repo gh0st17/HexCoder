@@ -124,7 +124,7 @@ void Params::setHashAlg(const string& hashAlg) {
 }
 
 void Params::setBlockSize(const string& blockSize) {
-  uint16_t powerOfTwo;
+  uint64_t powerOfTwo;
   try {
     powerOfTwo = stoul(blockSize);
     if (powerOfTwo > 63)

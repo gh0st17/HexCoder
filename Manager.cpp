@@ -195,7 +195,6 @@ void Manager::codeFile(bool mode) {
 		fill(params.path.begin(), params.path.end(), 0);
 		file.clear();
 		params.path.clear();
-		cin;
 	}
 	catch (bad_alloc const&) {
 		cerr << "Can't allocate memory size " << params.blockSize << " bytes for block\n";

@@ -10,9 +10,7 @@ int main(int argc, const char* argv[]) {
     else
       Manager m(params);
   }
-  else {
+  else
     Params::printHelp(argv[0]);
-    cin;
-  }
   return 0;
 }
