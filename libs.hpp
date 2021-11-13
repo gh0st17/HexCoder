@@ -13,4 +13,10 @@
 #include <map>
 #include <set>
 
+#ifdef _MSC_VER
+#include <windows.h>
+#else 
+#include <x86intrin.h>
+#endif
+
 using namespace std;
