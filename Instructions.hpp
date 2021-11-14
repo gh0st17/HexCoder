@@ -7,8 +7,6 @@ typedef vector<Action> Actions;
 class Instructions {
 
 public:
-	Actions acts;
-
 	Instructions() {}
 	~Instructions();
 	void createInstructions();
@@ -17,8 +15,10 @@ public:
 	void viewInstructions();
 	void applyActions(string& data, const size_t start, const size_t end);
 	void reverseActions(string& data, const size_t start, const size_t end);
+	size_t getActionsCount();
 
 private:
+	Actions acts;
 	const map<char, char (*)(char, uint8_t)> Ops {
 		{'^', [](char ch, uint8_t val) { return (char)( ch ^ val); }},
 		{'<', [](char ch, uint8_t val) { return (char)(ROL8(ch, val)); }},
