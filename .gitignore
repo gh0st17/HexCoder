@@ -4,6 +4,8 @@
 *.bat
 *.rc
 *.h
+*.o
+*.exe
 *.sln
 *.suo
 HexCoder/
