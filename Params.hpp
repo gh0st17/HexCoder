@@ -25,6 +25,8 @@ public:
   Params(const int argc, const char* argv[]);
   static void printHelp(string str);
   Params operator=(const Params& rhs);
+  const string getHashAlgorithmName();
+  const string getEncryptionMethodName();
 
 private:
   const set<string> paramsWithoutVal{

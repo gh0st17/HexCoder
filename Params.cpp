@@ -84,6 +84,26 @@ Params Params::operator=(const Params& rhs) {
   return *this;
 }
 
+const string Params::getHashAlgorithmName() {
+  if (hAlg == HashAlgorithm::None)
+    return "None";
+  else if (hAlg == HashAlgorithm::MD5)
+    return "MD5";
+  else if (hAlg == HashAlgorithm::SHA256)
+    return "SHA256";
+  else if (hAlg == HashAlgorithm::SHA512)
+    return "SHA512";
+}
+
+const string Params::getEncryptionMethodName() {
+  if (method == EncryptionMetod::Pass)
+    return "Password";
+  else if (method == EncryptionMetod::Actions)
+    return "Actions";
+  else if (method == EncryptionMetod::Both)
+    return "Both";
+}
+
 void Params::setMethod(const string& method) {
   if (method == "p")
     this->method = EncryptionMetod::Pass;
@@ -124,7 +144,7 @@ void Params::setHashAlg(const string& hashAlg) {
 }
 
 void Params::setBlockSize(const string& blockSize) {
-  uint16_t powerOfTwo;
+  uint64_t powerOfTwo;
   try {
     powerOfTwo = stoul(blockSize);
     if (powerOfTwo > 63)

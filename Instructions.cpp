@@ -86,6 +86,7 @@ void Instructions::writeInstructions(const string& path) {
 void Instructions::viewInstructions() {
   for (const auto& x : acts)
     cout << x.first << ' ' << +x.second << endl;
+  cout << "Actions count: " << acts.size() << endl;
 }
 
 void Instructions::applyActions(string& data, const size_t start, const size_t end) {
@@ -109,6 +110,10 @@ void Instructions::reverseActions(string& data, const size_t start, const size_t
     for (size_t i = start; i < end; i++)
       data[i] = revOps.at(op)(data[i], val);
   }
+}
+
+size_t Instructions::getActionsCount() {
+  return acts.size();
 }
 
 bool Instructions::validateOp(const char& op) {

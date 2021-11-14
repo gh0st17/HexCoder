@@ -46,11 +46,11 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	ifs.seekg(start);
 	ifs.read(&file[partStart], (partEnd - partStart));
 	ifs.close();
-	if (!pass.empty() && insts.acts.empty())
+	if (!pass.empty() && !insts.getActionsCount())
 		hc.code(file, pass, partStart, partEnd);
-	else if (!pass.empty() && !insts.acts.empty())
+	else if (!pass.empty() && insts.getActionsCount())
 		hc.code(file, pass, partStart, partEnd, insts, mode);
-	else if(pass.empty() && !insts.acts.empty())
+	else if(pass.empty() && insts.getActionsCount())
 		hc.code(file, insts, partStart, partEnd, mode);
 	m_locker.lock();
 	cout << "Thread " << n_thread << ": " << (partStart ? partStart + 1 : 0);
@@ -83,7 +83,7 @@ void Manager::codeFile(bool mode) {
 	ifs.seekg(0, ifs.end);
 	size_t fileSize = ifs.tellg();
 	ifs.close();
-	size_t currentBlockSize = params.blockSize, blocksCount = 0;
+	size_t blocksCount = 0;
 	if (params.blockSize > fileSize + threadCount) {
 		params.blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
@@ -99,6 +99,11 @@ void Manager::codeFile(bool mode) {
 		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
+		cout << "        Mode: " << (params.mode ? "Encrypt\n" : "Decrypt\n");
+		cout << "   Hash Alg.: " << params.getHashAlgorithmName() << endl;
+		cout << " Enc. method: " << params.getEncryptionMethodName() << endl;
+		if (params.method != EncryptionMetod::Pass)
+			cout << "  Acts count: " << insts.getActionsCount() << endl;
 		cout << "   File size: " << fileSize << " bytes\n";
 		cout << "  Block size: " << params.blockSize << " bytes\n";
 		cout << "   Part size: " << partSize << " bytes\n";
@@ -135,7 +140,6 @@ void Manager::codeFile(bool mode) {
 				else
 					return partStart + partSize;
 		};
-
 
 		size_t start = 0, end, partStart = 0, partEnd, sum = 0;
 
@@ -182,11 +186,6 @@ void Manager::codeFile(bool mode) {
 		auto t2 = chrono::high_resolution_clock::now();
 		fsec duration = t2 - t1;
 
-		if (currentBlockSize > fileSize) {
-			params.blockSize = currentBlockSize;
-			cout << "Warning: block size returned to ";
-			cout << params.blockSize << " bytes.\n";
-		}
 		setlocale(LC_CTYPE, ".1251");
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
@@ -195,7 +194,6 @@ void Manager::codeFile(bool mode) {
 		fill(params.path.begin(), params.path.end(), 0);
 		file.clear();
 		params.path.clear();
-		cin;
 	}
 	catch (bad_alloc const&) {
 		cerr << "Can't allocate memory size " << params.blockSize << " bytes for block\n";
@@ -218,7 +216,7 @@ void Manager::actionsMenu() {
 		if (ch == '1')
 			insts.createInstructions();
 		else if (ch == '2') {
-			if (!insts.acts.empty()) {
+			if (!insts.getActionsCount()) {
 				string filename;
 				cout << "Enter file name: ";
 				cin >> filename;
