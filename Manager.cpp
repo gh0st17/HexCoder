@@ -46,11 +46,11 @@ void Manager::readFilePth(const size_t n_thread, string& file, const string& pat
 	ifs.seekg(start);
 	ifs.read(&file[partStart], (partEnd - partStart));
 	ifs.close();
-	if (!pass.empty() && insts.getActionsCount())
+	if (!pass.empty() && !insts.getActionsCount())
 		hc.code(file, pass, partStart, partEnd);
-	else if (!pass.empty() && !insts.getActionsCount())
+	else if (!pass.empty() && insts.getActionsCount())
 		hc.code(file, pass, partStart, partEnd, insts, mode);
-	else if(pass.empty() && !insts.getActionsCount())
+	else if(pass.empty() && insts.getActionsCount())
 		hc.code(file, insts, partStart, partEnd, mode);
 	m_locker.lock();
 	cout << "Thread " << n_thread << ": " << (partStart ? partStart + 1 : 0);
@@ -140,7 +140,6 @@ void Manager::codeFile(bool mode) {
 				else
 					return partStart + partSize;
 		};
-
 
 		size_t start = 0, end, partStart = 0, partEnd, sum = 0;
 
