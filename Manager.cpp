@@ -84,12 +84,12 @@ void Manager::codeFile(bool mode) {
 	size_t fileSize = ifs.tellg();
 	ifs.close();
 	size_t blocksCount = 0;
-	if (params.blockSize > fileSize + threadCount) {
+	if (params.blockSize > fileSize + params.threadsCount) {
 		params.blockSize = fileSize;
 		cout << "Warning: block size < file size, ";
 		cout << "changing block size to file size.\n";
 	}
-	size_t partSize = params.blockSize / threadCount;
+	size_t partSize = params.blockSize / params.threadsCount;
 	while (blocksCount * params.blockSize < fileSize)
 		blocksCount++;
 
@@ -99,15 +99,16 @@ void Manager::codeFile(bool mode) {
 		if (!mode && params.path.substr(params.path.size() - 3) != "hcf")
 			throw "File extension not 'hcf'";
 
-		cout << "        Mode: " << (params.mode ? "Encrypt\n" : "Decrypt\n");
-		cout << "   Hash Alg.: " << params.getHashAlgorithmName() << endl;
-		cout << " Enc. method: " << params.getEncryptionMethodName() << endl;
+		cout << "         Mode: " << (params.mode ? "Encrypt\n" : "Decrypt\n");
+		cout << "    Hash Alg.: " << params.getHashAlgorithmName() << endl;
+		cout << "  Enc. method: " << params.getEncryptionMethodName() << endl;
 		if (params.method != EncryptionMetod::Pass)
-			cout << "  Acts count: " << insts.getActionsCount() << endl;
-		cout << "   File size: " << fileSize << " bytes\n";
-		cout << "  Block size: " << params.blockSize << " bytes\n";
-		cout << "   Part size: " << partSize << " bytes\n";
-		cout << "Blocks count: " << blocksCount << endl;
+			cout << "   Acts count: " << insts.getActionsCount() << endl;
+		cout << "    File size: " << fileSize << " bytes\n";
+		cout << "   Block size: " << params.blockSize << " bytes\n";
+		cout << "    Part size: " << partSize << " bytes\n";
+		cout << " Blocks count: " << blocksCount << endl;
+		cout << "Threads count: " << params.threadsCount << endl;
 		cout << "Please wait...\n";
 
 		string outPath = (mode ? params.path + ".hcf" :
@@ -147,12 +148,12 @@ void Manager::codeFile(bool mode) {
 		ofstream ofs(outPath, ofstream::binary);
 		vector<thread> t;
 		for (size_t b = 0; b < blocksCount; b++) {
-			for (size_t i = 0; i < threadCount; i++) {
+			for (size_t i = 0; i < params.threadsCount; i++) {
 
-				end = getEnd(i, b, start, threadCount, fileSize,
+				end = getEnd(i, b, start, params.threadsCount, fileSize,
 					blocksCount, partSize, params.blockSize);
 
-				partEnd = getPartEnd(i, b, partStart, threadCount,
+				partEnd = getPartEnd(i, b, partStart, params.threadsCount,
 					fileSize, blocksCount, partSize, params.blockSize);
 
 				sum += end - start;

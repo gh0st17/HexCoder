@@ -21,7 +21,6 @@ private:
   string pass;
   Instructions insts;
   HexCoder hc;
-  size_t threadCount = thread::hardware_concurrency();
 
   void readFilePth(const size_t n_thread, string& file, const string& path,
     const size_t start, const size_t partStart, const size_t partEnd, bool mode);

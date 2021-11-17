@@ -18,6 +18,7 @@ public:
   bool isCreate = false;
   bool isView = false;
   size_t blockSize = 1ULL << 28ULL;
+  size_t threadsCount = thread::hardware_concurrency();
   EncryptionMetod method = EncryptionMetod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 
@@ -30,20 +31,21 @@ public:
 
 private:
   const set<string> paramsWithoutVal{
+    "-d","--decrypt",
     "-c","--create","--view",
     "-h","--help"
   };
 
   const set<string> paramsWithVal{
-    "-m","--method","-d","--direction",
+    "-m","--method",
     "--hash","-b","-f","--file",
-    "-a","--actions"
+    "-a","--actions","-t"
   };
 
   void setMethod(const string& method);
-  void setDirection(const string& direction);
   void setHashAlg(const string& hashAlg);
   void setBlockSize(const string& blockSize);
+  void setThreadsCount(const string& threadsCount);
   void setFilePath(const string& filePath);
   void setActionsFilePath(const string& actionsFilePath);
 };
