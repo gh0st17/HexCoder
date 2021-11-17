@@ -15,6 +15,8 @@ Params::Params(const int argc, const char* argv[]) {
         setHashAlg(argv[++i]);
       else if (str == "-b")
         setBlockSize(argv[++i]);
+      else if (str == "-t")
+        setThreadsCount(argv[++i]);
       else if (str == "-f" || str == "--file")
         setFilePath(argv[++i]);
       else if (str == "-a" || str == "--actions")
@@ -56,20 +58,23 @@ Params::Params(const int argc, const char* argv[]) {
 }
 
 void Params::printHelp(string str) {
+  auto t_Count = thread::hardware_concurrency();
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
   cout << " [-m {p|a|b}] [-d {e|d}] [--hash {None|MD5|SHA256|SHA512}] ";
-  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] | -c | --view | -h" << endl;
+  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-t threadsCount] | -c | --view | -h" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both. Default Password\n";
   cout << "-d, --direction\t\te - Encrypt, d - Decrypt. Default Encrypt\n";
   cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
   cout << "-b,       \t\tBlock size as power of two. Default 28 (256Mb)\n";
   cout << "-f, --file\t\tFile path\n";
   cout << "-a, --actions\t\tActions file path\n";
+  cout << "-t,       \t\tThreads count from 1 to " << t_Count << ". Default " << t_Count << "\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
   cout << "            \t\tParameters above will be ignore\n";
   cout << "    --view\t\tView actions\n";
   cout << "            \t\tParameters above will be ignore\n";
   cout << "-h, --help\t\tPrint this message\n";
+  exit(0);
 }
 
 Params Params::operator=(const Params& rhs) {
@@ -79,6 +84,7 @@ Params Params::operator=(const Params& rhs) {
   isCreate = rhs.isCreate;
   isView = rhs.isView;
   blockSize = rhs.blockSize;
+  threadsCount = rhs.threadsCount;
   method = rhs.method;
   hAlg = rhs.hAlg;
   return *this;
@@ -152,6 +158,24 @@ void Params::setBlockSize(const string& blockSize) {
     if ((1ULL << powerOfTwo) < thread::hardware_concurrency())
       throw "Too small block size";
     this->blockSize = 1ULL << powerOfTwo;
+  }
+  catch (exception e) {
+    cerr << "Entered not a number";
+    exit(1);
+  }
+  catch (const char* c) {
+    cerr << c << endl;
+    exit(1);
+  }
+}
+
+void Params::setThreadsCount(const string& threadsCount) {
+  try {
+    this->threadsCount = stoul(threadsCount);
+    if (this->threadsCount > thread::hardware_concurrency())
+      throw "Too many threads count";
+    if (this->threadsCount < 1)
+      throw "Threads count can not be less 1";
   }
   catch (exception e) {
     cerr << "Entered not a number";
