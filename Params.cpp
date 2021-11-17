@@ -9,8 +9,6 @@ Params::Params(const int argc, const char* argv[]) {
       paramsWithVal.find(argv[i + 1]) == paramsWithVal.end()) {
       if (str == "-m" || str == "--method")
         setMethod(argv[++i]);
-      else if (str == "-d" || str == "--direction")
-        setDirection(argv[++i]);
       else if (str == "--hash")
         setHashAlg(argv[++i]);
       else if (str == "-b")
@@ -23,7 +21,11 @@ Params::Params(const int argc, const char* argv[]) {
         setActionsFilePath(argv[++i]);
     }
     else if (paramsWithoutVal.find(str) != paramsWithoutVal.end()) {
-      if (str == "--view")
+      if (str == "-d" || str == "--decrypt") {
+        mode = false;
+        continue;
+      }
+      else if (str == "--view")
         isView = true;
       else if (str == "-c" || str == "--create")
         isCreate = true;
@@ -63,7 +65,7 @@ void Params::printHelp(string str) {
   cout << " [-m {p|a|b}] [-d {e|d}] [--hash {None|MD5|SHA256|SHA512}] ";
   cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-t threadsCount] | -c | --view | -h" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both. Default Password\n";
-  cout << "-d, --direction\t\te - Encrypt, d - Decrypt. Default Encrypt\n";
+  cout << "-d, --decrypt\t\tDecrypt mode. Default Encrypt (unset)\n";
   cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
   cout << "-b,       \t\tBlock size as power of two. Default 28 (256Mb)\n";
   cout << "-f, --file\t\tFile path\n";
@@ -119,17 +121,6 @@ void Params::setMethod(const string& method) {
     this->method = EncryptionMetod::Both;
   else {
     cout << "Unknown method " << method << endl;
-    exit(1);
-  }
-}
-
-void Params::setDirection(const string& direction) {
-  if (direction == "e")
-    mode = true;
-  else if (direction == "d")
-    mode = false;
-  else {
-    cout << "Unknown direction " << direction << endl;
     exit(1);
   }
 }

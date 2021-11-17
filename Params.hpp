@@ -31,18 +31,18 @@ public:
 
 private:
   const set<string> paramsWithoutVal{
+    "-d","--decrypt",
     "-c","--create","--view",
     "-h","--help"
   };
 
   const set<string> paramsWithVal{
-    "-m","--method","-d","--direction",
+    "-m","--method",
     "--hash","-b","-f","--file",
     "-a","--actions","-t"
   };
 
   void setMethod(const string& method);
-  void setDirection(const string& direction);
   void setHashAlg(const string& hashAlg);
   void setBlockSize(const string& blockSize);
   void setThreadsCount(const string& threadsCount);
