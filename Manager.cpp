@@ -190,7 +190,6 @@ void Manager::codeFile(bool mode) {
 		setlocale(LC_CTYPE, ".1251");
 		cout << (mode ? "\nEncrypted " : "\nDecrypted ") << sum << " bytes for ";
 		cout << setprecision(5) << duration.count() << " seconds!\nFile path is " << outPath << endl;
-		setlocale(LC_CTYPE, ".866");
 		fill(file.begin(), file.end(), 0);
 		fill(params.path.begin(), params.path.end(), 0);
 		file.clear();

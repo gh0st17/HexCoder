@@ -112,7 +112,7 @@ void Instructions::reverseActions(string& data, const size_t start, const size_t
   }
 }
 
-size_t Instructions::getActionsCount() {
+const size_t Instructions::getActionsCount() {
   return acts.size();
 }
 
