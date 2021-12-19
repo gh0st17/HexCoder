@@ -75,7 +75,7 @@ void Params::printHelp(string str) {
   cout << "-f, --file\t\tFile path\n";
   cout << "-a, --actions\t\tActions file path\n";
   cout << "-t,       \t\tThreads count from 1 to " << t_Count << ". Default " << t_Count << "\n";
-  cout << "-v, --verbose\t\tThreads count from 1 to " << t_Count << ". Default " << t_Count << "\n";
+  cout << "-v, --verbose\t\tPrint threads info\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
   cout << "            \t\tParameters above will be ignore\n";
   cout << "    --view\t\tView actions\n";
