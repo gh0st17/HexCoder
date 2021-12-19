@@ -110,21 +110,21 @@ const string Params::getHashAlgorithmName() {
 }
 
 const string Params::getEncryptionMethodName() {
-  if (method == EncryptionMetod::Pass)
+  if (method == EncryptionMethod::Pass)
     return "Password";
-  else if (method == EncryptionMetod::Actions)
+  else if (method == EncryptionMethod::Actions)
     return "Actions";
-  else if (method == EncryptionMetod::Both)
+  else if (method == EncryptionMethod::Both)
     return "Both";
 }
 
 void Params::setMethod(const string& method) {
   if (method == "p")
-    this->method = EncryptionMetod::Pass;
+    this->method = EncryptionMethod::Pass;
   else if (method == "a")
-    this->method = EncryptionMetod::Actions;
+    this->method = EncryptionMethod::Actions;
   else if (method == "b")
-    this->method = EncryptionMetod::Both;
+    this->method = EncryptionMethod::Both;
   else {
     cout << "Unknown method " << method << endl;
     exit(1);

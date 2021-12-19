@@ -5,7 +5,7 @@ enum class HashAlgorithm {
   None, MD5, SHA256, SHA512
 };
 
-enum class EncryptionMetod {
+enum class EncryptionMethod {
   Pass, Actions, Both
 };
 
@@ -20,7 +20,7 @@ public:
   bool verbose = false;
   size_t blockSize = 1ULL << 28ULL;
   size_t threadsCount = thread::hardware_concurrency();
-  EncryptionMetod method = EncryptionMetod::Pass;
+  EncryptionMethod method = EncryptionMethod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 
   Params() {}

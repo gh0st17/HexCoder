@@ -2,14 +2,14 @@
 
 Manager::Manager(const Params& params) {
 	this->params = params;
-	if (params.method == EncryptionMetod::Pass)
+	if (params.method == EncryptionMethod::Pass)
 		enterPass();
 	else {
 		if (params.actionPath.empty()) {
 			cout << "File path for actions did not set! Exiting.\n";
 			return;
 		}
-		if (params.method == EncryptionMetod::Actions)
+		if (params.method == EncryptionMethod::Actions)
 			insts.readInstructions(params.actionPath);
 		else {
 			enterPass();
@@ -105,7 +105,7 @@ void Manager::codeFile(bool mode) {
 		cout << "         Mode: " << (params.mode ? "Encrypt\n" : "Decrypt\n");
 		cout << "    Hash Alg.: " << params.getHashAlgorithmName() << endl;
 		cout << "  Enc. method: " << params.getEncryptionMethodName() << endl;
-		if (params.method != EncryptionMetod::Pass)
+		if (params.method != EncryptionMethod::Pass)
 			cout << "   Acts count: " << insts.getActionsCount() << endl;
 		cout << "    File size: " << fileSize << " bytes\n";
 		cout << "   Block size: " << params.blockSize << " bytes\n";
