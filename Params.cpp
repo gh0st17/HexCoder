@@ -25,6 +25,10 @@ Params::Params(const int argc, const char* argv[]) {
         mode = false;
         continue;
       }
+      else if (str == "-v" || str == "--verbose") {
+        verbose = true;
+        continue;
+      }
       else if (str == "--view")
         isView = true;
       else if (str == "-c" || str == "--create")
@@ -62,8 +66,8 @@ Params::Params(const int argc, const char* argv[]) {
 void Params::printHelp(string str) {
   auto t_Count = thread::hardware_concurrency();
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
-  cout << " [-m {p|a|b}] [-d {e|d}] [--hash {None|MD5|SHA256|SHA512}] ";
-  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-t threadsCount] | -c | --view | -h" << endl;
+  cout << " [-m {p|a|b}] [-d] [--hash {None|MD5|SHA256|SHA512}] ";
+  cout << "[-b blockSize] {-f filePath} [-a actionsFilePath] [-t threadsCount] [-v] | -c | --view | -h" << endl;
   cout << "-m, --method\t\tp - Password, a - Actions, b - Both. Default Password\n";
   cout << "-d, --decrypt\t\tDecrypt mode. Default Encrypt (unset)\n";
   cout << "    --hash\t\tHash algorithm for password. Default is SHA256\n";
@@ -71,6 +75,7 @@ void Params::printHelp(string str) {
   cout << "-f, --file\t\tFile path\n";
   cout << "-a, --actions\t\tActions file path\n";
   cout << "-t,       \t\tThreads count from 1 to " << t_Count << ". Default " << t_Count << "\n";
+  cout << "-v, --verbose      \t\tThreads count from 1 to " << t_Count << ". Default " << t_Count << "\n";
   cout << "-c, --create\t\tOpen menu for creating and save actions\n";
   cout << "            \t\tParameters above will be ignore\n";
   cout << "    --view\t\tView actions\n";
@@ -85,6 +90,7 @@ Params Params::operator=(const Params& rhs) {
   mode = rhs.mode;
   isCreate = rhs.isCreate;
   isView = rhs.isView;
+  verbose = rhs.verbose;
   blockSize = rhs.blockSize;
   threadsCount = rhs.threadsCount;
   method = rhs.method;
@@ -104,21 +110,21 @@ const string Params::getHashAlgorithmName() {
 }
 
 const string Params::getEncryptionMethodName() {
-  if (method == EncryptionMetod::Pass)
+  if (method == EncryptionMethod::Pass)
     return "Password";
-  else if (method == EncryptionMetod::Actions)
+  else if (method == EncryptionMethod::Actions)
     return "Actions";
-  else if (method == EncryptionMetod::Both)
+  else if (method == EncryptionMethod::Both)
     return "Both";
 }
 
 void Params::setMethod(const string& method) {
   if (method == "p")
-    this->method = EncryptionMetod::Pass;
+    this->method = EncryptionMethod::Pass;
   else if (method == "a")
-    this->method = EncryptionMetod::Actions;
+    this->method = EncryptionMethod::Actions;
   else if (method == "b")
-    this->method = EncryptionMetod::Both;
+    this->method = EncryptionMethod::Both;
   else {
     cout << "Unknown method " << method << endl;
     exit(1);
