@@ -17,6 +17,7 @@ public:
   bool mode = true;
   bool isCreate = false;
   bool isView = false;
+  bool verbose = false;
   size_t blockSize = 1ULL << 28ULL;
   size_t threadsCount = thread::hardware_concurrency();
   EncryptionMetod method = EncryptionMetod::Pass;
@@ -33,7 +34,8 @@ private:
   const set<string> paramsWithoutVal{
     "-d","--decrypt",
     "-c","--create","--view",
-    "-h","--help"
+    "-h","--help",
+    "-v","--verbose"
   };
 
   const set<string> paramsWithVal{
