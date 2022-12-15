@@ -1,6 +1,6 @@
 # HexCoder
 <p align="center">
-<img src="https://i.ibb.co/CnTG3R5/hexagon-ico.png">
+<img src="https://i.ibb.co/wrPsdCm/hc-icon.png">
 <p align="center">
 
 XOR-based encryption processor with multithread support.
