@@ -1,3 +1,4 @@
+#pragma once
 #include <functional>
 #include <filesystem>
 #include <algorithm>

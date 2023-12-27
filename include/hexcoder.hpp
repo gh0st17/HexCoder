@@ -1,5 +1,5 @@
-#include "Instructions.hpp"
 #pragma once
+#include <instructions.hpp>
 
 class HexCoder {
 

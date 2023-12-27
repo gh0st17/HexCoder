@@ -1,5 +1,5 @@
-#include "libs.hpp"
 #pragma once
+#include "libs.hpp"
 
 enum class HashAlgorithm {
   None, MD5, SHA256, SHA512
@@ -24,7 +24,7 @@ public:
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 
   Params() {}
-  Params(const int argc, const char* argv[]);
+  Params(const size_t argc, const char* argv[]);
   static void printHelp(string str);
   Params operator=(const Params& rhs);
   const string getHashAlgorithmName();

@@ -1,6 +1,6 @@
-#include "Params.hpp"
+#include <params.hpp>
 
-Params::Params(const int argc, const char* argv[]) {
+Params::Params(const size_t argc, const char* argv[]) {
   string str;
   for (size_t i = 1; i < argc; i++) {
     str = string(argv[i]);
@@ -99,14 +99,14 @@ Params Params::operator=(const Params& rhs) {
 }
 
 const string Params::getHashAlgorithmName() {
-  if (hAlg == HashAlgorithm::None)
-    return "None";
-  else if (hAlg == HashAlgorithm::MD5)
+  if (hAlg == HashAlgorithm::MD5)
     return "MD5";
   else if (hAlg == HashAlgorithm::SHA256)
     return "SHA256";
   else if (hAlg == HashAlgorithm::SHA512)
     return "SHA512";
+  else
+    return "None";
 }
 
 const string Params::getEncryptionMethodName() {
@@ -114,7 +114,7 @@ const string Params::getEncryptionMethodName() {
     return "Password";
   else if (method == EncryptionMethod::Actions)
     return "Actions";
-  else if (method == EncryptionMethod::Both)
+  else
     return "Both";
 }
 
@@ -156,7 +156,7 @@ void Params::setBlockSize(const string& blockSize) {
       throw "Too small block size";
     this->blockSize = 1ULL << powerOfTwo;
   }
-  catch (exception e) {
+  catch (exception const& e) {
     cerr << "Entered not a number";
     exit(1);
   }
@@ -174,7 +174,7 @@ void Params::setThreadsCount(const string& threadsCount) {
     if (this->threadsCount < 1)
       throw "Threads count can not be less 1";
   }
-  catch (exception e) {
+  catch (exception const& e) {
     cerr << "Entered not a number";
     exit(1);
   }

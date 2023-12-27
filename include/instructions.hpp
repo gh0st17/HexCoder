@@ -1,5 +1,5 @@
-#include "libs.hpp"
 #pragma once
+#include <libs.hpp>
 
 typedef pair<char, uint8_t> Action;
 typedef vector<Action> Actions;

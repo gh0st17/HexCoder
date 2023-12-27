@@ -1,4 +1,4 @@
-#include "HexCoder.hpp"
+#include <hexcoder.hpp>
 
 void HexCoder::code(string& data, const string& pass,
 		const size_t start, const size_t end) {

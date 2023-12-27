@@ -1,4 +1,4 @@
-#include "Instructions.hpp"
+#include <instructions.hpp>
 
 Instructions::~Instructions() {
   zero();
@@ -15,7 +15,7 @@ void Instructions::createInstructions() {
   cout << "To complete entering type '0 0'. For example: | 5 | 32 & 21 0 0\n>>> ";
   char op = 1;
   uint16_t val = 1;
-  while (op != '0' && val != 0 || acts.empty()) {
+  while ((op != '0' && val != 0) || acts.empty()) {
     cin >> op >> val;
     if (op != 0 && val != 0 && validateOp(op)) {
       if (val == 0 || val > 255)
@@ -49,10 +49,9 @@ void Instructions::readInstructions(const string& path) {
     cerr << "Can't allocate memory size " << size << " bytes for actions";
     exit(1);
   }
-  catch (exception e) {
+  catch (exception const& e) {
     cerr << e.what() << endl;
   }
-  Actions::iterator next;
   char op;
   uint8_t val;
   for (Actions::iterator it = acts.begin(); it != acts.end();) {

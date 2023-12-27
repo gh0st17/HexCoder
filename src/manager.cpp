@@ -1,4 +1,4 @@
-#include "Manager.hpp"
+#include <manager.hpp>
 
 Manager::Manager(const Params& params) {
 	this->params = params;
@@ -103,7 +103,8 @@ void Manager::codeFile(bool mode) {
 			throw "File extension not 'hcf'";
 
 		cout << "         Mode: " << (params.mode ? "Encrypt\n" : "Decrypt\n");
-		cout << "    Hash Alg.: " << params.getHashAlgorithmName() << endl;
+		if (params.method != EncryptionMethod::Actions)
+			cout << "    Hash Alg.: " << params.getHashAlgorithmName() << endl;
 		cout << "  Enc. method: " << params.getEncryptionMethodName() << endl;
 		if (params.method != EncryptionMethod::Pass)
 			cout << "   Acts count: " << insts.getActionsCount() << endl;
@@ -202,10 +203,10 @@ void Manager::codeFile(bool mode) {
 		cerr << "Can't allocate memory size " << params.blockSize << " bytes for block\n";
 		cerr << "Try reduce block size";
 	}
-	catch (exception e) {
+	catch (exception const& e) {
 		cerr << e.what() << endl;
 	}
-	catch (char* c) {
+	catch (const char* c) {
 		cerr << c << endl;
 	}
 }
@@ -226,7 +227,7 @@ void Manager::actionsMenu() {
 #ifdef _WIN64
 				filename = filesystem::current_path().u8string() + '\\' + filename + ".hca";
 #else
-				filename = filesystem::current_path().u8string() + '/' + filename + ".hca";
+				filename = filesystem::current_path().string() + '/' + filename + ".hca";
 #endif
 				cout << filename;
 				insts.writeInstructions(filename);

@@ -1,6 +1,7 @@
 //Code from https://github.com/System-Glitch
 #include <string>
 #include <array>
+#include <cstdint>
 #pragma once
 
 using namespace std;

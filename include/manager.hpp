@@ -1,9 +1,9 @@
-#include "HexCoder.hpp"
-#include "Params.hpp"
-#include "HashAlgorithms/md5.hpp"
-#include "HashAlgorithms/SHA256.hpp"
-#include "HashAlgorithms/sha512.hpp"
 #pragma once
+#include <hexcoder.hpp>
+#include <params.hpp>
+#include <md5.hpp>
+#include <SHA256.hpp>
+#include <sha512.hpp>
 
 typedef chrono::duration<double> fsec;
 
