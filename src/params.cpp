@@ -4,23 +4,23 @@ Params::Params(const size_t argc, const char* argv[]) {
   string str;
   for (size_t i = 1; i < argc; i++) {
     str = string(argv[i]);
-    if (paramsWithVal.find(str) != paramsWithVal.end() &&
-      i + 1 < argc &&
-      paramsWithVal.find(argv[i + 1]) == paramsWithVal.end()) {
+    if (params_val.find(str) != params_val.end() &&
+        i + 1 < argc &&
+        params_val.find(argv[i + 1]) == params_val.end()) {
       if (str == "-m" || str == "--method")
-        setMethod(argv[++i]);
+        set_method(argv[++i]);
       else if (str == "--hash")
-        setHashAlg(argv[++i]);
+        set_hash_alg(argv[++i]);
       else if (str == "-b")
-        setBlockSize(argv[++i]);
+        set_block_size(argv[++i]);
       else if (str == "-t")
-        setThreadsCount(argv[++i]);
+        set_threads_count(argv[++i]);
       else if (str == "-f" || str == "--file")
-        setFilePath(argv[++i]);
+        set_file_path(argv[++i]);
       else if (str == "-a" || str == "--actions")
-        setActionsFilePath(argv[++i]);
+        set_actions_file_path(argv[++i]);
     }
-    else if (paramsWithoutVal.find(str) != paramsWithoutVal.end()) {
+    else if (params_no_val.find(str) != params_no_val.end()) {
       if (str == "-d" || str == "--decrypt") {
         mode = false;
         continue;
@@ -30,22 +30,22 @@ Params::Params(const size_t argc, const char* argv[]) {
         continue;
       }
       else if (str == "--view")
-        isView = true;
+        is_view = true;
       else if (str == "-c" || str == "--create")
-        isCreate = true;
+        is_create = true;
       else if (str == "-h" || str == "--help")
-        printHelp(argv[0]);
+        print_help(argv[0]);
       break;
     }
-    else if (paramsWithVal.find(str) == paramsWithVal.end() &&
-      paramsWithoutVal.find(str) == paramsWithoutVal.end()) {
+    else if (params_val.find(str) == params_val.end() &&
+              params_no_val.find(str) == params_no_val.end()) {
       cout << "Unknown parameter " << str << endl;
       exit(1);
     }
-    else if (paramsWithVal.find(str) != paramsWithVal.end() &&
-      (i + 1 == argc ||
-      (paramsWithVal.find(argv[i + 1]) != paramsWithVal.end() ||
-      paramsWithoutVal.find(argv[i + 1]) == paramsWithoutVal.end()))) {
+    else if (params_val.find(str) != params_val.end() &&
+              (i + 1 == argc ||
+              (params_val.find(argv[i + 1]) != params_val.end() ||
+              params_no_val.find(argv[i + 1]) == params_no_val.end()))) {
       cout << "Missing parameter value after " << str << endl;
       exit(1);
     }
@@ -63,7 +63,7 @@ Params::Params(const size_t argc, const char* argv[]) {
   }
 }
 
-void Params::printHelp(string str) {
+void Params::print_help(string str) {
   auto t_Count = thread::hardware_concurrency();
   cout << "Usage: " << str.substr(str.find_last_of('\\') + 1);
   cout << " [-m {p|a|b}] [-d] [--hash {None|MD5|SHA256|SHA512}] ";
@@ -86,19 +86,19 @@ void Params::printHelp(string str) {
 
 Params Params::operator=(const Params& rhs) {
   path = rhs.path;
-  actionPath = rhs.path;
+  action_path = rhs.path;
   mode = rhs.mode;
-  isCreate = rhs.isCreate;
-  isView = rhs.isView;
+  is_create = rhs.is_create;
+  is_view = rhs.is_view;
   verbose = rhs.verbose;
-  blockSize = rhs.blockSize;
-  threadsCount = rhs.threadsCount;
+  block_size = rhs.block_size;
+  threads_count = rhs.threads_count;
   method = rhs.method;
   hAlg = rhs.hAlg;
   return *this;
 }
 
-const string Params::getHashAlgorithmName() {
+const string Params::get_hash_name() {
   if (hAlg == HashAlgorithm::MD5)
     return "MD5";
   else if (hAlg == HashAlgorithm::SHA256)
@@ -109,7 +109,7 @@ const string Params::getHashAlgorithmName() {
     return "None";
 }
 
-const string Params::getEncryptionMethodName() {
+const string Params::get_enc_method_name() {
   if (method == EncryptionMethod::Pass)
     return "Password";
   else if (method == EncryptionMethod::Actions)
@@ -118,7 +118,7 @@ const string Params::getEncryptionMethodName() {
     return "Both";
 }
 
-void Params::setMethod(const string& method) {
+void Params::set_method(const string& method) {
   if (method == "p")
     this->method = EncryptionMethod::Pass;
   else if (method == "a")
@@ -131,30 +131,30 @@ void Params::setMethod(const string& method) {
   }
 }
 
-void Params::setHashAlg(const string& hashAlg) {
-  if (hashAlg == "None")
+void Params::set_hash_alg(const string& hash_alg) {
+  if (hash_alg == "None")
     hAlg = HashAlgorithm::None;
-  else if (hashAlg == "MD5")
+  else if (hash_alg == "MD5")
     hAlg = HashAlgorithm::MD5;
-  else if (hashAlg == "SHA256")
+  else if (hash_alg == "SHA256")
     hAlg = HashAlgorithm::SHA256;
-  else if (hashAlg == "SHA512")
+  else if (hash_alg == "SHA512")
     hAlg = HashAlgorithm::SHA512;
   else {
-    cout << "Unknown hash algorithm " << hashAlg << endl;
+    cout << "Unknown hash algorithm " << hash_alg << endl;
     exit(1);
   }
 }
 
-void Params::setBlockSize(const string& blockSize) {
-  uint64_t powerOfTwo;
+void Params::set_block_size(const string& block_size) {
+  uint64_t power_of_two;
   try {
-    powerOfTwo = stoul(blockSize);
-    if (powerOfTwo > 63)
+    power_of_two = stoul(block_size);
+    if (power_of_two > 63)
       throw "Too big block size";
-    if ((1ULL << powerOfTwo) < thread::hardware_concurrency())
+    if ((1ULL << power_of_two) < thread::hardware_concurrency())
       throw "Too small block size";
-    this->blockSize = 1ULL << powerOfTwo;
+    this->block_size = 1ULL << power_of_two;
   }
   catch (exception const& e) {
     cerr << "Entered not a number";
@@ -166,12 +166,12 @@ void Params::setBlockSize(const string& blockSize) {
   }
 }
 
-void Params::setThreadsCount(const string& threadsCount) {
+void Params::set_threads_count(const string& threads_count) {
   try {
-    this->threadsCount = stoul(threadsCount);
-    if (this->threadsCount > thread::hardware_concurrency())
+    this->threads_count = stoul(threads_count);
+    if (this->threads_count > thread::hardware_concurrency())
       throw "Too many threads count";
-    if (this->threadsCount < 1)
+    if (this->threads_count < 1)
       throw "Threads count can not be less 1";
   }
   catch (exception const& e) {
@@ -184,18 +184,18 @@ void Params::setThreadsCount(const string& threadsCount) {
   }
 }
 
-void Params::setFilePath(const string& filePath) {
-  if (filesystem::exists(filePath))
-    path = filePath;
+void Params::set_file_path(const string& file_path) {
+  if (filesystem::exists(file_path))
+    path = file_path;
   else {
     cout << "File not exists!\n";
     exit(1);
   }
 }
 
-void Params::setActionsFilePath(const string& actionsFilePath) {
-  if (filesystem::exists(actionsFilePath))
-    actionPath = actionsFilePath;
+void Params::set_actions_file_path(const string& actions_file_path) {
+  if (filesystem::exists(actions_file_path))
+    action_path = actions_file_path;
   else {
     cout << "Actions file not exists!\n";
     exit(1);

@@ -13,41 +13,41 @@ struct Params {
 
 public:
   string path;
-  string actionPath;
+  string action_path;
   bool mode = true;
-  bool isCreate = false;
-  bool isView = false;
+  bool is_create = false;
+  bool is_view = false;
   bool verbose = false;
-  size_t blockSize = 1ULL << 28ULL;
-  size_t threadsCount = thread::hardware_concurrency();
+  size_t block_size = 1ULL << 28ULL;
+  size_t threads_count = thread::hardware_concurrency();
   EncryptionMethod method = EncryptionMethod::Pass;
   HashAlgorithm hAlg = HashAlgorithm::SHA256;
 
   Params() {}
   Params(const size_t argc, const char* argv[]);
-  static void printHelp(string str);
+  static void print_help(string str);
   Params operator=(const Params& rhs);
-  const string getHashAlgorithmName();
-  const string getEncryptionMethodName();
+  const string get_hash_name();
+  const string get_enc_method_name();
 
 private:
-  const set<string> paramsWithoutVal{
+  const set<string> params_no_val {
     "-d","--decrypt",
     "-c","--create","--view",
     "-h","--help",
     "-v","--verbose"
   };
 
-  const set<string> paramsWithVal{
+  const set<string> params_val {
     "-m","--method",
     "--hash","-b","-f","--file",
     "-a","--actions","-t"
   };
 
-  void setMethod(const string& method);
-  void setHashAlg(const string& hashAlg);
-  void setBlockSize(const string& blockSize);
-  void setThreadsCount(const string& threadsCount);
-  void setFilePath(const string& filePath);
-  void setActionsFilePath(const string& actionsFilePath);
+  void set_method(const string& method);
+  void set_hash_alg(const string& hash_alg);
+  void set_block_size(const string& block_size);
+  void set_threads_count(const string& threads_count);
+  void set_file_path(const string& file_path);
+  void set_actions_file_path(const string& actions_file_path);
 };

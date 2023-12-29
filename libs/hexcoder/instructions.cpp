@@ -4,7 +4,7 @@ Instructions::~Instructions() {
   zero();
 }
 
-void Instructions::createInstructions() {
+void Instructions::create_instructions() {
   if (!acts.empty()) {
     zero();
     cout << "Old actions was unset\n";
@@ -29,10 +29,10 @@ void Instructions::createInstructions() {
     }
   }
   cout << "Entered:\n";
-  viewInstructions();
+  view_instructions();
 }
 
-void Instructions::readInstructions(const string& path) {
+void Instructions::read_instructions(const string& path) {
   size_t size;
   try {
     ifstream ifs(path, ifstream::binary);
@@ -76,13 +76,13 @@ void Instructions::readInstructions(const string& path) {
   }
 }
 
-void Instructions::writeInstructions(const string& path) {
+void Instructions::write_instructions(const string& path) {
   ofstream ofs(path, ifstream::binary);
   ofs.write(reinterpret_cast<const char*>(&acts[0]), acts.size() * sizeof(Action));
   ofs.close();
 }
 
-void Instructions::viewInstructions() {
+void Instructions::view_instructions() {
   for (const auto& x : acts)
     cout << x.first << ' ' << +x.second << endl;
   cout << "Actions count: " << acts.size() << endl;
@@ -99,7 +99,7 @@ void Instructions::applyActions(string& data, const size_t start, const size_t e
   }
 }
 
-void Instructions::reverseActions(string& data, const size_t start, const size_t end) {
+void Instructions::reverse_actions(string& data, const size_t start, const size_t end) {
   Actions revActs = Actions(acts.rbegin(), acts.rend());
   char op;
   uint8_t val;
@@ -111,7 +111,7 @@ void Instructions::reverseActions(string& data, const size_t start, const size_t
   }
 }
 
-const size_t Instructions::getActionsCount() {
+const size_t Instructions::get_actions_count() {
   return acts.size();
 }
 

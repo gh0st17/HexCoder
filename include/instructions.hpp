@@ -9,13 +9,13 @@ class Instructions {
 public:
 	Instructions() {}
 	~Instructions();
-	void createInstructions();
-	void readInstructions(const string& path);
-	void writeInstructions(const string& path);
-	void viewInstructions();
+	void create_instructions();
+	void read_instructions(const string& path);
+	void write_instructions(const string& path);
+	void view_instructions();
 	void applyActions(string& data, const size_t start, const size_t end);
-	void reverseActions(string& data, const size_t start, const size_t end);
-	const size_t getActionsCount();
+	void reverse_actions(string& data, const size_t start, const size_t end);
+	const size_t get_actions_count();
 
 private:
 	Actions acts;

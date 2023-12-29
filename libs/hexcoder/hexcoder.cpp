@@ -11,7 +11,7 @@ void HexCoder::code(string& data, Instructions& insts,
 	if (mode)
 		insts.applyActions(data, start, end);
 	else
-		insts.reverseActions(data, start, end);
+		insts.reverse_actions(data, start, end);
 }
 
 void HexCoder::code(string& data, const string& pass,
@@ -23,5 +23,5 @@ void HexCoder::code(string& data, const string& pass,
 		data[i] ^= pass[(i % pass.size())];
 	}
 	if (!mode)
-		insts.reverseActions(data, start, end);
+		insts.reverse_actions(data, start, end);
 }
